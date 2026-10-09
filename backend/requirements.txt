@@ -1,0 +1,48 @@
+# ============================================================
+# CrimeNet Backend — let pip resolve compatible versions
+# ============================================================
+
+# Web framework
+fastapi
+uvicorn[standard]
+python-multipart
+
+# Database
+sqlalchemy[asyncio]
+asyncpg
+alembic
+psycopg2-binary==2.9.13
+
+# Graph database
+neo4j>=5.21.0
+
+# Auth
+python-jose[cryptography]
+passlib[bcrypt]
+bcrypt
+
+# Data validation
+pydantic>=2.7
+pydantic-settings>=2.2
+email-validator
+
+# AI / LLM providers
+openai>=1.30.0
+anthropic>=0.28.0
+
+# File processing
+pdfplumber
+python-docx
+pandas
+openpyxl
+
+# HTTP client
+httpx
+
+# Utilities
+python-dotenv
+tenacity
+
+# Testing
+pytest
+pytest-asyncio

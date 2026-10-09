@@ -1,0 +1,184 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Base ───────────────────────────────────────────────── */
+@layer base {
+  html, body, #root {
+    height: 100%;
+    background-color: #211A17;
+    color: #E9DFC9;
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  * { box-sizing: border-box; }
+
+  /* Scrollbar — antique brass tint */
+  ::-webkit-scrollbar         { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track   { background: #2C1F1A; }
+  ::-webkit-scrollbar-thumb   { background: rgba(169,144,100,0.35); border-radius: 2px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(169,144,100,0.55); }
+
+  /* Selection highlight */
+  ::selection { background: rgba(122,45,53,0.45); color: #E9DFC9; }
+
+  /* Heading elements use serif */
+  h1, h2, h3 { font-family: 'Playfair Display', Georgia, serif; }
+}
+
+/* ─── Reusable component classes ─────────────────────────── */
+@layer components {
+
+  /* ── Typography ── */
+  .text-heading {
+    @apply font-serif text-cream tracking-tight;
+  }
+  .text-subheading {
+    @apply font-serif italic text-parchment;
+  }
+  .text-label {
+    @apply font-sans text-xs font-medium tracking-widest uppercase text-sepia;
+  }
+  .text-mono-id {
+    @apply font-mono text-xs text-brass tracking-wide;
+  }
+
+  /* ── Cards / Panels ── */
+  .card {
+    @apply bg-mahogany rounded-file border border-wire shadow-card p-4;
+  }
+  .card-hover {
+    @apply card cursor-pointer transition-all duration-200
+           hover:bg-rosewood hover:border-wire-strong hover:shadow-card-hover;
+  }
+  .panel {
+    @apply bg-mahogany border border-wire;
+  }
+
+  /* ── Buttons ── */
+  .btn-primary {
+    @apply px-4 py-2 bg-burgundy hover:bg-burgundy-light text-cream rounded-file
+           text-sm font-medium tracking-wide transition-colors duration-150
+           border border-burgundy-light/40 shadow-burgundy;
+  }
+  .btn-secondary {
+    @apply px-4 py-2 bg-walnut hover:bg-rosewood text-parchment rounded-file
+           text-sm font-medium border border-wire-strong transition-colors duration-150;
+  }
+  .btn-ghost {
+    @apply px-3 py-1.5 text-sepia hover:text-parchment hover:bg-walnut/60
+           rounded-file text-sm transition-colors duration-150;
+  }
+
+  /* ── Form elements ── */
+  .input-field {
+    @apply w-full bg-walnut border border-wire text-cream rounded-file
+           px-3 py-2 text-sm font-sans
+           focus:outline-none focus:border-brass/60 focus:ring-0
+           placeholder-sepia/60 transition-colors duration-150;
+  }
+  .select-field {
+    @apply input-field appearance-none cursor-pointer;
+  }
+
+  /* ── Badges / Status tags ── */
+  .badge {
+    @apply inline-flex items-center px-2 py-0.5 rounded-stamp text-xs font-mono
+           tracking-wide uppercase font-medium;
+  }
+  .badge-active   { @apply badge bg-status-active/20   text-status-active   border border-status-active/30; }
+  .badge-closed   { @apply badge bg-status-closed/20   text-status-closed   border border-status-closed/30; }
+  .badge-archived { @apply badge bg-status-archived/20 text-status-archived border border-status-archived/30; }
+  .badge-critical { @apply badge bg-status-critical/20 text-status-critical border border-status-critical/30; }
+  .badge-high     { @apply badge bg-status-high/20     text-status-high     border border-status-high/30; }
+  .badge-medium   { @apply badge bg-status-medium/20   text-status-medium   border border-status-medium/30; }
+  .badge-low      { @apply badge bg-status-low/20      text-status-low      border border-status-low/30; }
+
+  /* ── Dividers ── */
+  .divider {
+    @apply border-t border-wire my-3;
+  }
+  .divider-vertical {
+    @apply border-l border-wire mx-3 self-stretch;
+  }
+
+  /* ── Case file card ── */
+  .case-file {
+    @apply card-hover relative overflow-hidden;
+  }
+  .case-file::before {
+    content: '';
+    @apply absolute top-0 left-0 w-1 h-full bg-burgundy/60;
+  }
+  .case-file.status-closed::before   { @apply bg-status-closed/60; }
+  .case-file.status-archived::before { @apply bg-sepia/40; }
+
+  /* ── Evidence tag ── */
+  .evidence-tag {
+    @apply inline-flex items-center gap-1 px-1.5 py-0.5 rounded-stamp
+           text-xs font-mono border;
+  }
+
+  /* ── Red string line (investigation board) ── */
+  .string-line {
+    @apply border-t border-dashed border-burgundy/40;
+  }
+
+  /* ── Sidebar nav item ── */
+  .nav-item {
+    @apply flex items-center gap-2.5 px-3 py-2 rounded-file text-sm font-sans
+           text-sepia hover:text-parchment hover:bg-walnut/80
+           transition-colors duration-150 w-full;
+  }
+  .nav-item-active {
+    @apply nav-item bg-burgundy/15 text-cream border-l-2 border-burgundy
+           hover:bg-burgundy/20 pl-[10px];
+  }
+
+  /* ── Graph node label chip ── */
+  .node-chip {
+    @apply inline-flex items-center gap-1.5 px-2 py-0.5 rounded-stamp
+           text-xs font-mono border;
+  }
+
+  /* ── Tab nav ── */
+  .workspace-tab {
+    @apply px-4 py-2.5 text-sm font-sans whitespace-nowrap border-b-2
+           transition-colors duration-150 cursor-pointer;
+  }
+  .workspace-tab-active {
+    @apply workspace-tab border-burgundy text-cream;
+  }
+  .workspace-tab-inactive {
+    @apply workspace-tab border-transparent text-sepia hover:text-parchment hover:border-wire-strong;
+  }
+
+  /* ── Loading pulse for skeleton states ── */
+  .skeleton {
+    @apply bg-walnut/60 animate-pulse rounded-file;
+  }
+}
+
+/* ─── Animations ─────────────────────────────────────────── */
+@layer utilities {
+  .animate-fade-in  { animation: fadeIn  0.4s ease forwards; }
+  .animate-fade-up  { animation: fadeUp  0.5s ease forwards; }
+  .animate-slow-pulse { animation: slowPulse 3s ease-in-out infinite; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slowPulse {
+  0%, 100% { opacity: 0.7; }
+  50%       { opacity: 1; }
+}

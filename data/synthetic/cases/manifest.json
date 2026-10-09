@@ -1,0 +1,40 @@
+[
+  {
+    "case_number": "CASE-2026-001",
+    "title": "Organized Financial Fraud Network",
+    "description": "Multi-city financial fraud involving shell companies, money mules, and hawala transfers.",
+    "priority": "HIGH",
+    "files": [
+      "case1_financial_fraud.txt",
+      "case1_transactions.csv"
+    ]
+  },
+  {
+    "case_number": "CASE-2026-002",
+    "title": "Vehicle Theft Ring \u2014 Delhi NCR",
+    "description": "Coordinated vehicle theft network with chop shops across Faridabad and Gurgaon.",
+    "priority": "MEDIUM",
+    "files": [
+      "case2_vehicle_theft.txt"
+    ]
+  },
+  {
+    "case_number": "CASE-2026-003",
+    "title": "Kidnapping for Ransom \u2014 Bangalore",
+    "description": "Abduction of a businessman; ransom demand; partial payment traced.",
+    "priority": "CRITICAL",
+    "files": [
+      "case3_kidnapping.txt"
+    ]
+  },
+  {
+    "case_number": "CASE-2026-004",
+    "title": "CryptoMax Investment Fraud",
+    "description": "Cyber-enabled investment fraud affecting 340+ victims nationwide via fake crypto platform.",
+    "priority": "HIGH",
+    "files": [
+      "case4_cyber_fraud.txt",
+      "case4_cdr.csv"
+    ]
+  }
+]

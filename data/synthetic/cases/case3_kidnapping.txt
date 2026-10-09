@@ -1,0 +1,55 @@
+CASE FILE: CASE-2026-GAMMA
+TYPE: Kidnapping for Ransom
+CLASSIFICATION: SYNTHETIC DEMONSTRATION DATA
+
+INCIDENT SUMMARY
+On 5 March 2026, Vikram Bose (age 42, businessman) was abducted from outside his
+residence in Koramangala, Bangalore. A ransom demand of INR 2 crore was received
+the following day.
+
+PERSONS OF INTEREST
+
+1. Harish Pillai (alias: Harry, H.P.)
+   Phone: +91-99880-77654
+   Primary suspect. Former employee of Bose Industries.
+   Dismissed in December 2025 following financial dispute.
+
+2. Leela Nair
+   Phone: +91-82200-33991
+   Believed to have assisted with logistics. Relationship to Harish unknown.
+
+3. Mangesh Tiwari
+   Phone: +91-76655-44230
+   Driver of abduction vehicle (White Innova, MH 12 JJ 8891).
+   Last seen in Mysuru on 7 March 2026.
+
+VICTIM
+
+- Vikram Bose
+  DOB: 1984-07-14
+  Address: 14B Koramangala 5th Block, Bangalore.
+  Director, Bose Industries Pvt. Ltd.
+
+TIMELINE OF EVENTS
+
+01 Mar 2026 — Harish Pillai contacted Vikram Bose's office requesting meeting. Denied.
+03 Mar 2026 — Harish Pillai observed surveilling Vikram Bose's residence (CCTV footage).
+05 Mar 2026 — Vikram Bose abducted at 07:45. Witnesses report white Innova.
+06 Mar 2026 — Anonymous call received by Bose family. Ransom: INR 2 crore. 48-hour deadline.
+06 Mar 2026 — Cell tower data places +91-99880-77654 near Tumkur Road.
+07 Mar 2026 — Mangesh Tiwari's vehicle spotted on NH-275 near Mysuru (ANPR camera).
+08 Mar 2026 — Partial ransom payment of INR 40,00,000 transferred to account ACCT-1199003344.
+09 Mar 2026 — Vikram Bose found alive near Channapatna. Minor injuries.
+10 Mar 2026 — Harish Pillai arrested, Mysuru. Mangesh Tiwari still at large.
+
+COMMUNICATIONS
+
++91-99880-77654 called +91-82200-33991 on 03 Mar 2026 at 22:55 (duration 31 min)
++91-99880-77654 called +91-76655-44230 on 04 Mar 2026 at 06:10 (duration 5 min)
+BLOCKED NUMBER called Bose family landline on 06 Mar 2026 at 11:02 (duration 2 min)
++91-82200-33991 called +91-76655-44230 on 07 Mar 2026 at 14:00 (duration 7 min)
+
+FINANCIAL
+
+- ACCT-1199003344 (Unknown holder) received INR 40,00,000 on 08 Mar 2026.
+- Account opened 1 March 2026. Operated for 3 days. Funds withdrawn via ATM Mysuru.

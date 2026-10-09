@@ -1,0 +1,70 @@
+CASE FILE: CASE-2026-DELTA
+TYPE: Cyber-Enabled Investment Fraud
+CLASSIFICATION: SYNTHETIC DEMONSTRATION DATA
+
+INCIDENT SUMMARY
+Between October 2025 and January 2026, 340 victims across India were defrauded of
+approximately INR 8.5 crore through a fake cryptocurrency investment platform
+called "CryptoMax India." The platform was operated via Telegram groups and fake websites.
+
+PERSONS OF INTEREST
+
+1. Nitesh Joshi
+   Phone: +91-91234-00981
+   Email: nitesh.joshi.tech@protonmail.com
+   Suspected operator of CryptoMax India platform.
+   Telegram: @crypto_nitesh
+
+2. Ananya Sharma
+   Phone: +91-80012-44900
+   Social media recruitment for investment scheme.
+   Instagram: @ananya_grows_wealth
+
+3. Pavel Novak (foreign national)
+   Suspected to have provided technical infrastructure.
+   IP addresses traced to Eastern Europe.
+
+4. Rakesh Gupta
+   Phone: +91-96680-22113
+   Local payment aggregator. Operated mule accounts for fund collection.
+
+ORGANIZATIONS
+
+- CryptoMax India (fake entity)
+  Website: cryptomaxindia[.]com (domain now suspended)
+  Telegram group: 4,200 members at peak
+
+- FastPay Solutions
+  Payment service used for initial fund collection. Linked to Rakesh Gupta.
+
+MODUS OPERANDI
+
+1. Victims approached via Telegram and Instagram with promises of 30-40% monthly returns.
+2. Victims asked to invest minimum INR 5,000. Early investors paid artificial returns.
+3. Large investors (above INR 1,00,000) invited to "premium" Telegram channel.
+4. In January 2026, platform withdrew all funds and went offline.
+
+FINANCIAL SUMMARY (AGGREGATED)
+
+Total collected: INR 8,50,00,000
+Total victims: 340
+Average loss per victim: INR 25,000
+Largest single loss: INR 15,00,000 (victim identity protected)
+Funds routed through: FastPay Solutions → ACCT-5544332211 → ACCT-9988776655 → Crypto exchange
+
+TIMELINE
+
+Oct 2025      — CryptoMax India Telegram group created by @crypto_nitesh.
+Nov 2025      — Ananya Sharma begins promoting scheme on Instagram.
+Dec 2025      — 200+ victims have invested. Platform shows fabricated profits.
+15 Jan 2026   — Rakesh Gupta transfers INR 3.2 crore offshore via crypto exchange.
+20 Jan 2026   — Platform goes offline. Telegram group deleted.
+22 Jan 2026   — First FIRs filed. Cyber Cell investigation begins.
+28 Jan 2026   — Ananya Sharma arrested, Chennai.
+
+DIGITAL EVIDENCE
+
+- IP logs: 185.220.101.x (Tor exit node) accessed admin panel.
+- Domain cryptomaxindia[.]com registered via privacy-protected registrar.
+- Telegram account @crypto_nitesh linked to SIM registered to false identity.
+- FastPay Solutions KYC documents fraudulent (confirmed).

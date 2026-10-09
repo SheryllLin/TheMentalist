@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Case File — Naina Sethi / Arjun Joseph</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<style>
+:root{
+  --ink:#14161a;
+  --ink-2:#0e0f12;
+  --panel:#1b1e24;
+  --panel-2:#22262d;
+  --paper:#ece6d5;
+  --paper-dim:#d9d2bd;
+  --brass:#c9932f;
+  --brass-dim:#8a6521;
+  --rust:#b0483f;
+  --teal:#4f8f79;
+  --slate:#7c8a9c;
+  --line:rgba(255,255,255,0.09);
+  --line-strong:rgba(255,255,255,0.16);
+  --text:#e9e6de;
+  --text-soft:#a7abb4;
+  --text-faint:#6d7178;
+  --radius:3px;
+}
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0;
+  background:var(--ink);
+  color:var(--text);
+  font-family:'Inter',sans-serif;
+  -webkit-font-smoothing:antialiased;
+  overflow:hidden;
+}
+::selection{background:var(--brass);color:var(--ink-2);}
+
+/* ---------- layout shell ---------- */
+.shell{
+  display:grid;
+  grid-template-rows:auto auto auto 1fr;
+  height:100vh;
+  width:100vw;
+}
+
+/* ---------- header ---------- */
+header.masthead{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  padding:18px 28px 14px 28px;
+  border-bottom:1px solid var(--line);
+  background:
+    linear-gradient(180deg, var(--ink) 0%, var(--ink) 100%);
+}
+.masthead-left{display:flex;align-items:baseline;gap:16px;}
+.case-number{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11px;
+  letter-spacing:.06em;
+  color:var(--brass);
+  border:1px solid var(--brass-dim);
+  padding:3px 8px;
+  border-radius:2px;
+}
+h1.title{
+  font-family:'Fraunces',serif;
+  font-weight:700;
+  font-size:24px;
+  margin:0;
+  letter-spacing:.002em;
+  color:var(--paper);
+}
+.title small{
+  display:block;
+  font-family:'Inter',sans-serif;
+  font-weight:400;
+  font-size:12.5px;
+  color:var(--text-soft);
+  margin-top:3px;
+  letter-spacing:0;
+}
+.masthead-right{
+  display:flex;
+  gap:22px;
+  align-items:center;
+}
+.legend{
+  display:flex;
+  gap:16px;
+  font-size:11.5px;
+  color:var(--text-soft);
+  font-family:'IBM Plex Mono',monospace;
+}
+.legend-item{display:flex;align-items:center;gap:6px;}
+.swatch{width:9px;height:9px;border-radius:50%;display:inline-block;}
+.sw-canon{background:var(--brass);}
+.sw-synth{background:var(--slate);border:1px dashed var(--slate);background:transparent;}
+
+/* ---------- tabs ---------- */
+nav.tabs{
+  display:flex;
+  gap:2px;
+  padding:0 24px;
+  border-bottom:1px solid var(--line);
+  background:var(--ink-2);
+}
+nav.tabs button{
+  appearance:none;
+  border:none;
+  background:transparent;
+  color:var(--text-faint);
+  font-family:'Inter',sans-serif;
+  font-weight:600;
+  font-size:12.5px;
+  letter-spacing:.01em;
+  padding:11px 18px 10px 18px;
+  cursor:pointer;
+  position:relative;
+  border-radius:6px 6px 0 0;
+  transition:color .15s ease, background .15s ease;
+}
+nav.tabs button:hover{color:var(--text-soft);}
+nav.tabs button.active{
+  color:var(--paper);
+  background:var(--panel);
+}
+nav.tabs button.active::after{
+  content:"";
+  position:absolute;
+  left:0;right:0;bottom:-1px;
+  height:2px;
+  background:var(--brass);
+}
+nav.tabs button .tab-index{
+  font-family:'IBM Plex Mono',monospace;
+  color:var(--text-faint);
+  margin-right:7px;
+  font-size:10.5px;
+}
+nav.tabs button .tab-badge{
+  display:inline-block;
+  margin-left:6px;
+  background:var(--rust);
+  color:#fff;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:9px;
+  padding:1px 5px;
+  border-radius:8px;
+  vertical-align:middle;
+  line-height:1.6;
+}
+
+/* ---------- graph stats bar ---------- */
+.graph-stats{
+  display:flex;
+  gap:18px;
+  padding:7px 24px;
+  border-bottom:1px solid var(--line);
+  background:var(--ink-2);
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10.5px;
+  color:var(--text-faint);
+}
+.graph-stats span b{color:var(--brass);}
+
+/* ---------- path finder ---------- */
+.path-finder{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  margin-bottom:14px;
+}
+.path-finder .side-label{margin-bottom:4px;}
+.path-finder select{
+  width:100%;
+  background:var(--panel);
+  border:1px solid var(--line);
+  color:var(--text);
+  padding:6px 8px;
+  border-radius:var(--radius);
+  font-family:'Inter',sans-serif;
+  font-size:11.5px;
+  outline:none;
+  cursor:pointer;
+}
+.path-finder select:focus{border-color:var(--brass-dim);}
+.btn-find{
+  appearance:none;
+  border:1px solid var(--brass-dim);
+  background:transparent;
+  color:var(--brass);
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11px;
+  padding:6px 10px;
+  border-radius:var(--radius);
+  cursor:pointer;
+  transition:all .13s ease;
+  letter-spacing:.02em;
+}
+.btn-find:hover{background:var(--brass-dim);color:var(--paper);}
+.btn-find.clear{border-color:var(--line);color:var(--text-faint);}
+.btn-find.clear:hover{background:var(--panel-2);color:var(--text);}
+.path-result{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10px;
+  color:var(--text-soft);
+  line-height:1.6;
+  padding:6px 8px;
+  background:var(--panel-2);
+  border-radius:var(--radius);
+  border-left:2px solid var(--brass);
+}
+.path-result.none{border-left-color:var(--rust);color:var(--rust);}
+
+/* ---------- tooltip ---------- */
+#graph-tooltip{
+  position:fixed;
+  pointer-events:none;
+  background:var(--panel-2);
+  border:1px solid var(--line-strong);
+  border-radius:5px;
+  padding:8px 12px;
+  font-size:11.5px;
+  color:var(--text);
+  z-index:9999;
+  max-width:220px;
+  box-shadow:0 4px 18px rgba(0,0,0,.45);
+  display:none;
+}
+#graph-tooltip .tt-name{
+  font-family:'Fraunces',serif;
+  font-weight:600;
+  font-size:13px;
+  color:var(--paper);
+  margin-bottom:3px;
+}
+#graph-tooltip .tt-role{color:var(--text-soft);margin-bottom:4px;}
+#graph-tooltip .tt-score{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10px;
+  color:var(--brass);
+}
+
+/* ---------- evidence filter bar ---------- */
+.ev-filter-bar{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:10px 24px;
+  border-bottom:1px solid var(--line);
+  background:var(--ink-2);
+  font-size:11.5px;
+  color:var(--text-soft);
+  flex-shrink:0;
+}
+.ev-filter-bar label{white-space:nowrap;}
+input[type=range]{
+  accent-color:var(--brass);
+  width:120px;
+  cursor:pointer;
+}
+.ev-filter-bar span{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10.5px;
+  color:var(--brass);
+  min-width:32px;
+}
+.ev-type-select{
+  background:var(--panel);
+  border:1px solid var(--line);
+  color:var(--text);
+  padding:4px 8px;
+  border-radius:var(--radius);
+  font-family:'Inter',sans-serif;
+  font-size:11.5px;
+  outline:none;
+  cursor:pointer;
+  margin-left:8px;
+}
+
+/* ---------- path highlight on graph ---------- */
+.link.path-highlight{
+  stroke:var(--brass) !important;
+  stroke-width:2.8 !important;
+  stroke-dasharray:none !important;
+  opacity:1 !important;
+}
+.link.path-dim{opacity:0.08;}
+.node.path-dim{opacity:0.15;}
+.node.path-highlight circle,
+.node.path-highlight rect,
+.node.path-highlight polygon{
+  stroke:var(--brass) !important;
+  stroke-width:2.5 !important;
+}
+
+/* ---------- contradiction highlight ---------- */
+.contradiction-group.has-false{
+  border-color:rgba(176,72,63,0.45);
+}
+.stmt-row.is-false{
+  background:rgba(176,72,63,0.07);
+}
+.stmt-row.is-false .stmt-text{color:var(--text);}
+
+/* ---------- pulse animation (high priority) ---------- */
+@keyframes pulse-ring{
+  0%{r:var(--pr);opacity:.55;}
+  70%{r:calc(var(--pr) + 9px);opacity:0;}
+  100%{r:calc(var(--pr) + 9px);opacity:0;}
+}
+.pulse-ring{
+  fill:none;
+  stroke:var(--rust);
+  stroke-width:1.2;
+  pointer-events:none;
+  animation:pulse-ring 2s ease-out infinite;
+}
+
+/* ---------- main grid ---------- */
+main.workspace{
+  display:grid;
+  grid-template-columns:250px 1fr 320px;
+  min-height:0;
+  background:var(--panel);
+}
+.pane{min-height:0; overflow:hidden; display:flex; flex-direction:column;}
+
+/* sidebar */
+aside.sidebar{
+  border-right:1px solid var(--line);
+  padding:18px 16px;
+  overflow-y:auto;
+  background:var(--ink-2);
+}
+.side-block{margin-bottom:22px;}
+.side-label{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10px;
+  letter-spacing:.08em;
+  color:var(--text-faint);
+  margin-bottom:9px;
+  text-transform:uppercase;
+}
+input.search{
+  width:100%;
+  background:var(--panel);
+  border:1px solid var(--line);
+  color:var(--text);
+  padding:8px 10px;
+  border-radius:var(--radius);
+  font-family:'Inter',sans-serif;
+  font-size:12.5px;
+  outline:none;
+}
+input.search:focus{border-color:var(--brass-dim);}
+.chip-row{display:flex;flex-wrap:wrap;gap:6px;}
+.chip{
+  font-size:11px;
+  padding:5px 9px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  color:var(--text-soft);
+  cursor:pointer;
+  user-select:none;
+  transition:all .12s ease;
+}
+.chip:hover{border-color:var(--line-strong);}
+.chip.on{
+  background:var(--brass-dim);
+  border-color:var(--brass);
+  color:var(--paper);
+}
+.entity-list{display:flex;flex-direction:column;gap:1px;}
+.entity-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:6px 6px;
+  border-radius:var(--radius);
+  cursor:pointer;
+  font-size:12px;
+  color:var(--text-soft);
+}
+.entity-row:hover{background:var(--panel-2);color:var(--text);}
+.entity-row.selected{background:var(--panel-2);color:var(--paper);}
+.dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.entity-row .pr{
+  margin-left:auto;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:9.5px;
+  color:var(--text-faint);
+}
+
+/* stage */
+.stage{
+  position:relative;
+  overflow:auto;
+  padding:0;
+  display:flex;
+  flex-direction:column;
+}
+.view{
+  flex:1;
+  min-height:0;
+  overflow:auto;
+  display:none;
+}
+#view-graph{
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+.stage-inner{padding:20px 24px;}
+.stage-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  padding:18px 24px 0 24px;
+}
+.stage-title{
+  font-family:'Fraunces',serif;
+  font-size:16px;
+  font-weight:600;
+  color:var(--paper);
+}
+.stage-sub{
+  font-size:11.5px;
+  color:var(--text-faint);
+  margin-top:2px;
+}
+.stage-note{
+  font-size:11px;
+  color:var(--text-faint);
+  max-width:280px;
+  text-align:right;
+  line-height:1.5;
+  font-style:italic;
+}
+
+/* graph */
+#graph-wrap{width:100%;height:100%;}
+svg#graph{width:100%;height:100%;display:block;}
+.node-label{
+  font-family:'Inter',sans-serif;
+  font-size:9.5px;
+  fill:var(--text-soft);
+  pointer-events:none;
+}
+.link{stroke:var(--line-strong);stroke-width:1.1;fill:none;}
+.link.synthetic{stroke-dasharray:2,3;stroke:var(--slate);}
+.node-circle{cursor:pointer;stroke-width:1.4;}
+.node-circle.selected{stroke:var(--paper) !important;stroke-width:2.5;}
+
+/* timeline */
+.timeline-wrap{padding:26px 24px 60px 24px;}
+.timeline-track{
+  position:relative;
+  border-left:2px solid var(--line-strong);
+  margin-left:12px;
+  padding-left:24px;
+}
+.tl-event{
+  position:relative;
+  padding-bottom:22px;
+}
+.tl-event::before{
+  content:"";
+  position:absolute;
+  left:-30px;
+  top:3px;
+  width:9px;height:9px;
+  border-radius:50%;
+  background:var(--brass);
+  border:2px solid var(--ink-2);
+}
+.tl-event.future::before{background:var(--rust);}
+.tl-time{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10.5px;
+  color:var(--brass);
+  margin-bottom:3px;
+}
+.tl-name{
+  font-family:'Fraunces',serif;
+  font-weight:600;
+  font-size:14px;
+  color:var(--paper);
+}
+.tl-type{
+  font-size:10px;
+  color:var(--text-faint);
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  margin-left:8px;
+}
+.tl-desc{
+  font-size:12.5px;
+  color:var(--text-soft);
+  margin-top:4px;
+  max-width:640px;
+  line-height:1.5;
+}
+.tl-tags{margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;}
+.tag{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10px;
+  padding:2px 7px;
+  border-radius:10px;
+  border:1px solid var(--line);
+  color:var(--text-soft);
+}
+
+/* statements */
+.statements-wrap{padding:22px 24px 60px 24px;display:flex;flex-direction:column;gap:16px;}
+.contradiction-group{
+  background:var(--panel-2);
+  border:1px solid var(--line);
+  border-radius:6px;
+  overflow:hidden;
+}
+.cg-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 14px;
+  border-bottom:1px solid var(--line);
+  background:rgba(255,255,255,0.02);
+}
+.cg-speaker{
+  font-family:'Fraunces',serif;
+  font-weight:600;
+  font-size:13.5px;
+  color:var(--paper);
+}
+.cg-topic{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10px;
+  color:var(--text-faint);
+}
+.cg-body{padding:4px 0;}
+.stmt-row{
+  display:grid;
+  grid-template-columns:90px 1fr 100px;
+  gap:12px;
+  padding:9px 14px;
+  border-bottom:1px solid rgba(255,255,255,0.04);
+  align-items:start;
+}
+.stmt-row:last-child{border-bottom:none;}
+.stmt-context{font-size:10.5px;color:var(--text-faint);padding-top:2px;}
+.stmt-text{font-size:12.5px;color:var(--text-soft);line-height:1.5;}
+.stmt-status{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10px;
+  text-align:right;
+  padding-top:2px;
+}
+.status-true{color:var(--teal);}
+.status-false{color:var(--rust);}
+
+/* evidence board */
+.evidence-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+  gap:12px;
+  padding:22px 24px 60px 24px;
+}
+#ev-grid-wrap{
+  overflow-y:auto;
+  flex:1;
+}
+.ev-card{
+  background:var(--panel-2);
+  border:1px solid var(--line);
+  border-radius:6px;
+  padding:12px 13px;
+}
+.ev-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
+.ev-name{font-family:'Fraunces',serif;font-weight:600;font-size:13px;color:var(--paper);line-height:1.3;}
+.ev-type{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:9.5px;
+  color:var(--text-faint);
+  white-space:nowrap;
+  margin-left:8px;
+}
+.ev-value{font-size:11.5px;color:var(--text-soft);line-height:1.5;margin-top:4px;}
+.ev-meta{
+  margin-top:9px;
+  display:flex;
+  justify-content:space-between;
+  font-size:10px;
+  color:var(--text-faint);
+  font-family:'IBM Plex Mono',monospace;
+}
+.confidence-bar{height:3px;background:var(--line);border-radius:2px;margin-top:9px;overflow:hidden;}
+.confidence-fill{height:100%;background:var(--brass);}
+
+/* priority */
+.priority-wrap{padding:22px 24px 60px 24px;max-width:760px;}
+.priority-disclaimer{
+  font-size:11.5px;
+  color:var(--text-faint);
+  border-left:2px solid var(--brass-dim);
+  padding:8px 12px;
+  margin-bottom:20px;
+  line-height:1.6;
+  font-style:italic;
+}
+.pr-row{
+  display:grid;
+  grid-template-columns:150px 1fr 50px;
+  align-items:center;
+  gap:12px;
+  padding:8px 0;
+  border-bottom:1px solid rgba(255,255,255,0.05);
+}
+.pr-name{font-size:12.5px;color:var(--paper);font-weight:500;}
+.pr-role{display:block;font-size:10px;color:var(--text-faint);font-weight:400;margin-top:1px;}
+.pr-bar-bg{height:8px;background:var(--panel-2);border-radius:4px;overflow:hidden;}
+.pr-bar-fill{height:100%;border-radius:4px;}
+.pr-score{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11px;
+  color:var(--text-soft);
+  text-align:right;
+}
+
+/* dossier */
+aside.dossier{
+  border-left:1px solid var(--line);
+  padding:0;
+  overflow-y:auto;
+  background:var(--ink-2);
+}
+.dossier-empty{
+  padding:40px 22px;
+  color:var(--text-faint);
+  font-size:12.5px;
+  line-height:1.6;
+  text-align:center;
+}
+.dossier-empty .glyph{
+  font-size:26px;
+  display:block;
+  margin-bottom:10px;
+  opacity:.5;
+}
+.dossier-head{
+  padding:20px 20px 14px 20px;
+  border-bottom:1px solid var(--line);
+}
+.dossier-kicker{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10px;
+  color:var(--brass);
+  letter-spacing:.06em;
+  margin-bottom:6px;
+}
+.dossier-name{
+  font-family:'Fraunces',serif;
+  font-weight:700;
+  font-size:19px;
+  color:var(--paper);
+  line-height:1.25;
+}
+.dossier-role{font-size:12px;color:var(--text-soft);margin-top:4px;}
+.status-pill{
+  display:inline-block;
+  margin-top:10px;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:9.5px;
+  padding:2px 8px;
+  border-radius:10px;
+  border:1px solid var(--line-strong);
+  color:var(--text-soft);
+}
+.dossier-section{padding:15px 20px;border-bottom:1px solid var(--line);}
+.dossier-section:last-child{border-bottom:none;}
+.dossier-section h4{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.07em;
+  color:var(--text-faint);
+  margin:0 0 10px 0;
+}
+.dossier-note{font-size:12px;color:var(--text-soft);line-height:1.55;}
+.rel-item{
+  font-size:12px;
+  color:var(--text-soft);
+  padding:5px 0;
+  border-bottom:1px dashed rgba(255,255,255,0.06);
+  cursor:pointer;
+  line-height:1.4;
+}
+.rel-item:last-child{border-bottom:none;}
+.rel-item b{color:var(--paper);font-weight:500;}
+.rel-item .rtype{
+  display:block;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:9.5px;
+  color:var(--brass);
+  margin-top:1px;
+}
+
+/* scrollbars */
+::-webkit-scrollbar{width:9px;height:9px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--line-strong);border-radius:5px;}
+::-webkit-scrollbar-thumb:hover{background:var(--text-faint);}
+
+@media (max-width:900px){
+  main.workspace{grid-template-columns:1fr;}
+  aside.sidebar, aside.dossier{display:none;}
+}
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <header class="masthead">
+    <div class="masthead-left">
+      <span class="case-number">CASE 1102 — BADLA</span>
+      <div>
+        <h1 class="title">Naina Sethi &amp; the Glen Mohr Hotel Murder
+          <small>Synthetic reconstruction of the 2019 film <em>Badla</em> — investigation graph prototype</small>
+        </h1>
+      </div>
+    </div>
+    <div class="masthead-right">
+      <div class="legend">
+        <div class="legend-item"><span class="swatch sw-canon"></span>Canon (from film)</div>
+        <div class="legend-item"><span class="swatch sw-synth"></span>Synthetic (demo data)</div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tabs" id="tabs">
+    <button class="active" data-tab="graph"><span class="tab-index">01</span>Graph</button>
+    <button data-tab="timeline"><span class="tab-index">02</span>Timeline</button>
+    <button data-tab="statements" id="tab-statements-btn"><span class="tab-index">03</span>Statements</button>
+    <button data-tab="evidence"><span class="tab-index">04</span>Evidence</button>
+    <button data-tab="priority"><span class="tab-index">05</span>Priority</button>
+  </nav>
+  <div class="graph-stats" id="graph-stats">
+    <span><b id="stat-nodes">—</b> nodes</span>
+    <span><b id="stat-edges">—</b> edges</span>
+    <span><b id="stat-persons">—</b> persons</span>
+    <span><b id="stat-locs">—</b> locations</span>
+    <span><b id="stat-ev">—</b> evidence</span>
+    <span style="margin-left:auto;color:var(--text-faint)">Keys 1–5 switch tabs · Click node to inspect</span>
+  </div>
+
+  <main class="workspace">
+    <aside class="sidebar">
+      <div class="side-block">
+        <div class="side-label">Search entities</div>
+        <input class="search" id="search" type="text" placeholder="Name, role, ID…">
+      </div>
+      <div class="side-block path-finder" id="path-finder-block">
+        <div class="side-label">Path finder</div>
+        <select id="path-from"><option value="">— From entity —</option></select>
+        <select id="path-to"><option value="">— To entity —</option></select>
+        <div style="display:flex;gap:6px;">
+          <button class="btn-find" id="btn-find-path">Find path</button>
+          <button class="btn-find clear" id="btn-clear-path">Clear</button>
+        </div>
+        <div id="path-result" style="display:none"></div>
+      </div>
+      <div class="side-block" id="graph-layers-block">
+        <div class="side-label">Graph layers</div>
+        <div class="chip-row" id="layer-chips">
+          <div class="chip on" data-layer="relationships">Relationships</div>
+          <div class="chip" data-layer="events">Events</div>
+          <div class="chip" data-layer="locations">Locations</div>
+          <div class="chip" data-layer="evidence">Evidence</div>
+          <div class="chip" data-layer="assets">Assets</div>
+        </div>
+      </div>
+      <div class="side-block">
+        <div class="side-label">Persons (<span id="person-count">0</span>)</div>
+        <div class="entity-list" id="entity-list"></div>
+      </div>
+    </aside>
+
+    <div class="pane stage" id="stage">
+      <div class="stage-header">
+        <div>
+          <div class="stage-title" id="stage-title">Investigation graph</div>
+          <div class="stage-sub" id="stage-sub">Click a node to open its dossier. Drag to rearrange, scroll to zoom.</div>
+        </div>
+        <div class="stage-note" id="stage-note"></div>
+      </div>
+      <div id="view-graph" class="view" style="display:flex;">
+        <div id="graph-wrap"><svg id="graph"></svg></div>
+      </div>
+      <div id="view-timeline" class="view"></div>
+      <div id="view-statements" class="view"></div>
+      <div id="view-evidence" class="view" style="display:none;">
+        <div class="ev-filter-bar" id="ev-filter-bar">
+          <label>Min confidence: <input type="range" id="conf-slider" min="0" max="100" value="0" step="5"></label>
+          <span id="conf-value">0%</span>
+          <label style="margin-left:12px;">Type:
+            <select class="ev-type-select" id="ev-type-filter"><option value="">All types</option></select>
+          </label>
+          <span id="ev-count-label" style="margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-faint);"></span>
+        </div>
+        <div id="ev-grid-wrap"></div>
+      </div>
+      <div id="view-priority" class="view"></div>
+    </div>
+
+    <aside class="dossier" id="dossier">
+      <div class="dossier-empty">
+        <span class="glyph">◇</span>
+        Select a person, location or piece of evidence to open its dossier.
+      </div>
+    </aside>
+  </main>
+</div><!-- .shell -->
+<div id="graph-tooltip">
+  <div class="tt-name" id="tt-name"></div>
+  <div class="tt-role" id="tt-role"></div>
+  <div class="tt-score" id="tt-score"></div>
+</div>
+<script>
+/* ============ DATA ============ */
+const DATA = {"persons": [{"entity_id": "P001", "name": "Naina Sethi", "entity_type": "PERSON", "role": "Suspect", "baseline_priority": "High", "data_status": "Canon", "notes": "Primary accused in Arjun's murder; successful businesswoman"}, {"entity_id": "P002", "name": "Arjun Joseph", "entity_type": "PERSON", "role": "Victim", "baseline_priority": "High", "data_status": "Canon", "notes": "Naina's secret lover; murdered at Glen Mohr Hotel"}, {"entity_id": "P003", "name": "Rani Kaur Toor", "entity_type": "PERSON", "role": "Witness/Investigator", "baseline_priority": "High", "data_status": "Canon", "notes": "Sunny's mother; seeks truth and revenge"}, {"entity_id": "P004", "name": "Nirmal 'Nimbi' Singh Toor", "entity_type": "PERSON", "role": "Person of Interest", "baseline_priority": "High", "data_status": "Canon", "notes": "Sunny's father; hotel employee; later impersonates Badal Gupta"}, {"entity_id": "P005", "name": "Sunny Singh Toor", "entity_type": "PERSON", "role": "Victim", "baseline_priority": "High", "data_status": "Canon", "notes": "Rani and Nirmal's son; dies after the earlier road incident"}, {"entity_id": "P006", "name": "Jimmy Punjabi", "entity_type": "PERSON", "role": "Lawyer", "baseline_priority": "Medium", "data_status": "Canon", "notes": "Naina's lawyer and college friend"}, {"entity_id": "P007", "name": "Badal Gupta", "entity_type": "PERSON", "role": "Lawyer", "baseline_priority": "Medium", "data_status": "Canon", "notes": "Real defence lawyer; identity is impersonated in the investigation"}, {"entity_id": "P008", "name": "Sunil Sethi", "entity_type": "PERSON", "role": "Family", "baseline_priority": "Low", "data_status": "Canon", "notes": "Naina's husband"}, {"entity_id": "P009", "name": "Vani", "entity_type": "PERSON", "role": "Witness", "baseline_priority": "Medium", "data_status": "Canon", "notes": "Arjun's wife; referenced as a possible prosecution witness"}, {"entity_id": "P010", "name": "Detective Sodhi", "entity_type": "PERSON", "role": "Police", "baseline_priority": "Medium", "data_status": "Canon", "notes": "Detective involved in the investigation"}, {"entity_id": "P011", "name": "Glen Mohr Receptionist", "entity_type": "PERSON", "role": "Hotel Staff", "baseline_priority": "Low", "data_status": "Canon", "notes": "Hotel receptionist"}, {"entity_id": "P012", "name": "Hotel Manager", "entity_type": "PERSON", "role": "Hotel Staff", "baseline_priority": "Low", "data_status": "Synthetic", "notes": "Synthetic supporting entity for hotel records"}, {"entity_id": "P013", "name": "Bank Compliance Officer", "entity_type": "PERSON", "role": "Bank Staff", "baseline_priority": "Low", "data_status": "Synthetic", "notes": "Synthetic supporting entity for financial records"}, {"entity_id": "P014", "name": "Forensic Analyst", "entity_type": "PERSON", "role": "Forensics", "baseline_priority": "Low", "data_status": "Synthetic", "notes": "Synthetic supporting entity for evidence processing"}, {"entity_id": "P015", "name": "Investigating Officer", "entity_type": "PERSON", "role": "Police", "baseline_priority": "Medium", "data_status": "Synthetic", "notes": "Synthetic case-management entity"}], "locations": [{"location_id": "L001", "name": "Glen Mohr Hotel", "location_type": "HOTEL", "investigation_role": "Crime scene", "data_status": "Canon", "notes": "Remote hotel where Arjun is found dead"}, {"location_id": "L002", "name": "Naina's Apartment", "location_type": "RESIDENCE", "investigation_role": "Investigation site", "data_status": "Canon", "notes": "Location of the lawyer interview and final reveal"}, {"location_id": "L003", "name": "Rani & Nirmal's House", "location_type": "RESIDENCE", "investigation_role": "Relevant location", "data_status": "Canon", "notes": "Home where Arjun encounters Sunny's parents"}, {"location_id": "L004", "name": "Forest Cabin Area", "location_type": "LOCATION", "investigation_role": "Prior incident", "data_status": "Canon", "notes": "Area associated with Naina and Arjun's earlier rendezvous"}, {"location_id": "L005", "name": "Swamp / Water Disposal Area", "location_type": "LOCATION", "investigation_role": "Evidence site", "data_status": "Canon", "notes": "Area where Sunny's car was disposed"}, {"location_id": "L006", "name": "Car Dump Yard", "location_type": "LOCATION", "investigation_role": "Evidence site", "data_status": "Canon", "notes": "Location where Naina and Arjun dispose of a car"}, {"location_id": "L007", "name": "Business Award Venue", "location_type": "EVENT VENUE", "investigation_role": "Public event", "data_status": "Canon", "notes": "Venue where Rani confronts Naina"}, {"location_id": "L008", "name": "Hotel Across From Naina's Apartment", "location_type": "HOTEL", "investigation_role": "Surveillance site", "data_status": "Canon", "notes": "Room rented by Rani to watch Naina"}, {"location_id": "L009", "name": "Bank / Financial Institution", "location_type": "BANK", "investigation_role": "Financial record source", "data_status": "Canon", "notes": "Sunny's former workplace; exact institution is not specified"}, {"location_id": "L010", "name": "Police Station", "location_type": "POLICE", "investigation_role": "Investigation site", "data_status": "Synthetic", "notes": "Synthetic placeholder for police records"}], "assets": [{"asset_id": "A001", "name": "Naina's Car", "asset_type": "VEHICLE", "owner_entity_id": "P001", "data_status": "Canon", "notes": "Vehicle involved in the earlier road incident"}, {"asset_id": "A002", "name": "Sunny's Car", "asset_type": "VEHICLE", "owner_entity_id": "P005", "data_status": "Canon", "notes": "Car associated with Sunny and later disposed"}, {"asset_id": "A003", "name": "Naina's Phone", "asset_type": "PHONE", "owner_entity_id": "P001", "data_status": "Synthetic", "notes": "Synthetic device record for CDR demonstration"}, {"asset_id": "A004", "name": "Arjun's Phone", "asset_type": "PHONE", "owner_entity_id": "P002", "data_status": "Synthetic", "notes": "Synthetic device record for CDR demonstration"}, {"asset_id": "A005", "name": "Sunny's Phone", "asset_type": "PHONE", "owner_entity_id": "P005", "data_status": "Canon", "notes": "Phone left with Arjun after the earlier incident"}, {"asset_id": "A006", "name": "Rani's Phone", "asset_type": "PHONE", "owner_entity_id": "P003", "data_status": "Synthetic", "notes": "Synthetic device record"}, {"asset_id": "A007", "name": "Nirmal's Phone", "asset_type": "PHONE", "owner_entity_id": "P004", "data_status": "Synthetic", "notes": "Synthetic device record"}, {"asset_id": "A008", "name": "Naina Bank Account", "asset_type": "BANK_ACCOUNT", "owner_entity_id": "P001", "data_status": "Synthetic", "notes": "Synthetic account for demonstrating financial links"}, {"asset_id": "A009", "name": "Arjun Bank Account", "asset_type": "BANK_ACCOUNT", "owner_entity_id": "P002", "data_status": "Synthetic", "notes": "Synthetic account for demonstrating financial links"}, {"asset_id": "A010", "name": "Sunny Bank Account", "asset_type": "BANK_ACCOUNT", "owner_entity_id": "P005", "data_status": "Canon/Synthetic", "notes": "Sunny's bank relationship; transaction details are synthetic"}, {"asset_id": "A011", "name": "Blackmail Cash", "asset_type": "FINANCIAL_ASSET", "owner_entity_id": "P001", "data_status": "Synthetic", "notes": "Synthetic representation of cash brought to hotel"}, {"asset_id": "A012", "name": "Recorder Pen", "asset_type": "EVIDENCE_DEVICE", "owner_entity_id": "P007", "data_status": "Canon", "notes": "Pen containing a hidden recorder in the reveal"}], "events": [{"event_id": "E001", "event_name": "Earlier secret rendezvous", "event_type": "Prior Incident", "primary_entity_id": "P001", "secondary_entity_id": "P002", "location_id": "L004", "relative_time_start": "T-90d", "relative_time_end": "T-90d", "description": "Naina and Arjun meet at a remote cabin/wooded area.", "data_status": "Canon"}, {"event_id": "E002", "event_name": "Road collision", "event_type": "Accident", "primary_entity_id": "P001", "secondary_entity_id": "P005", "location_id": "L004", "relative_time_start": "T-89d", "relative_time_end": "T-89d", "description": "Naina's car is involved in a collision with Sunny's car.", "data_status": "Canon"}, {"event_id": "E003", "event_name": "Sunny placed in trunk", "event_type": "Cover-up", "primary_entity_id": "P001", "secondary_entity_id": "P002", "location_id": "L004", "relative_time_start": "T-89d", "relative_time_end": "T-89d", "description": "The pair place Sunny's body in the trunk of his car according to Naina's account; later she reveals he was still alive.", "data_status": "Canon"}, {"event_id": "E004", "event_name": "Arjun meets Rani and Nirmal", "event_type": "Encounter", "primary_entity_id": "P002", "secondary_entity_id": "P003", "location_id": "L003", "relative_time_start": "T-89d", "relative_time_end": "T-89d", "description": "Arjun encounters Sunny's parents while waiting for the car to be repaired.", "data_status": "Canon"}, {"event_id": "E005", "event_name": "Sunny phone rings", "event_type": "Discovery", "primary_entity_id": "P003", "secondary_entity_id": "P005", "location_id": "L003", "relative_time_start": "T-89d", "relative_time_end": "T-89d", "description": "Rani hears Sunny's phone in Arjun's possession and becomes suspicious.", "data_status": "Canon"}, {"event_id": "E006", "event_name": "Car disposed", "event_type": "Evidence Disposal", "primary_entity_id": "P001", "secondary_entity_id": "P002", "location_id": "L005", "relative_time_start": "T-88d", "relative_time_end": "T-88d", "description": "Naina later disposes of Sunny's car in a swamp; exact chronology is reconstructed from the narrative.", "data_status": "Canon"}, {"event_id": "E007", "event_name": "Car reported stolen", "event_type": "False Report", "primary_entity_id": "P001", "secondary_entity_id": "P001", "location_id": "L006", "relative_time_start": "T-88d", "relative_time_end": "T-88d", "description": "Naina reports a car as stolen after the disposal sequence.", "data_status": "Canon"}, {"event_id": "E008", "event_name": "Sunny accused of embezzlement", "event_type": "Financial Cover-up", "primary_entity_id": "P005", "secondary_entity_id": "P013", "location_id": "L009", "relative_time_start": "T-80d", "relative_time_end": "T-80d", "description": "News later reports Sunny as implicated in embezzlement; the film reveals Arjun framed him using stolen credentials.", "data_status": "Canon"}, {"event_id": "E009", "event_name": "Rani identifies Naina's car", "event_type": "Identification", "primary_entity_id": "P003", "secondary_entity_id": "P001", "location_id": "L003", "relative_time_start": "T-75d", "relative_time_end": "T-75d", "description": "Rani connects Naina's vehicle to Sunny's disappearance.", "data_status": "Canon"}, {"event_id": "E010", "event_name": "False alibi created", "event_type": "Obstruction", "primary_entity_id": "P006", "secondary_entity_id": "P001", "location_id": "L010", "relative_time_start": "T-74d", "relative_time_end": "T-74d", "description": "Jimmy falsifies an alibi for Naina according to the story.", "data_status": "Canon"}, {"event_id": "E011", "event_name": "Rani confronts Naina", "event_type": "Confrontation", "primary_entity_id": "P003", "secondary_entity_id": "P001", "location_id": "L007", "relative_time_start": "T-60d", "relative_time_end": "T-60d", "description": "Rani confronts Naina publicly and asks for Sunny's whereabouts.", "data_status": "Canon"}, {"event_id": "E012", "event_name": "Blackmail contact", "event_type": "Blackmail", "primary_entity_id": "P001", "secondary_entity_id": "P002", "location_id": "L002", "relative_time_start": "T-30d", "relative_time_end": "T-30d", "description": "Naina and Arjun receive blackmail communications regarding their affair.", "data_status": "Canon"}, {"event_id": "E013", "event_name": "Hotel meeting arranged", "event_type": "Blackmail", "primary_entity_id": "P001", "secondary_entity_id": "P002", "location_id": "L001", "relative_time_start": "T-1d", "relative_time_end": "T-1d", "description": "Naina and Arjun go to Glen Mohr Hotel with cash for the blackmailer.", "data_status": "Canon"}, {"event_id": "E014", "event_name": "Naina attacked / loses consciousness", "event_type": "Assault", "primary_entity_id": "P001", "secondary_entity_id": "P001", "location_id": "L001", "relative_time_start": "T-1d", "relative_time_end": "T-1d", "description": "Naina is attacked and later wakes to find Arjun dead.", "data_status": "Canon"}, {"event_id": "E015", "event_name": "Arjun found dead", "event_type": "Murder", "primary_entity_id": "P002", "secondary_entity_id": "P001", "location_id": "L001", "relative_time_start": "T-1d", "relative_time_end": "T-1d", "description": "Arjun is found dead in the hotel room; Naina is present.", "data_status": "Canon"}, {"event_id": "E016", "event_name": "Police investigate hotel room", "event_type": "Investigation", "primary_entity_id": "P010", "secondary_entity_id": "P001", "location_id": "L001", "relative_time_start": "T-1d", "relative_time_end": "T-1d", "description": "Police investigate the locked-room scene and arrest Naina.", "data_status": "Canon"}, {"event_id": "E017", "event_name": "Naina released on bail", "event_type": "Legal", "primary_entity_id": "P001", "secondary_entity_id": "P006", "location_id": "L010", "relative_time_start": "T+1d", "relative_time_end": "T+1d", "description": "Naina is out on bail and seeks legal assistance.", "data_status": "Canon"}, {"event_id": "E018", "event_name": "Jimmy engages Badal Gupta", "event_type": "Legal", "primary_entity_id": "P006", "secondary_entity_id": "P007", "location_id": "L002", "relative_time_start": "T+1d", "relative_time_end": "T+1d", "description": "Jimmy brings in the renowned defence lawyer Badal Gupta.", "data_status": "Canon"}, {"event_id": "E019", "event_name": "False witness claim", "event_type": "Interview", "primary_entity_id": "P007", "secondary_entity_id": "P001", "location_id": "L002", "relative_time_start": "T+1d", "relative_time_end": "T+1d", "description": "Badal claims a witness will testify against Naina; later reveals this was fabricated to pressure her.", "data_status": "Canon"}, {"event_id": "E020", "event_name": "Naina reveals Sunny incident", "event_type": "Interview", "primary_entity_id": "P001", "secondary_entity_id": "P007", "location_id": "L002", "relative_time_start": "T+1d", "relative_time_end": "T+1d", "description": "Naina gives Badal a version of the earlier collision and cover-up.", "data_status": "Canon"}, {"event_id": "E021", "event_name": "Badal theorizes Rani killed Arjun", "event_type": "Hypothesis", "primary_entity_id": "P007", "secondary_entity_id": "P003", "location_id": "L002", "relative_time_start": "T+1d", "relative_time_end": "T+1d", "description": "Badal develops a hypothesis involving Rani and Nirmal.", "data_status": "Canon"}, {"event_id": "E022", "event_name": "Naina admits seeing Rani", "event_type": "Interview", "primary_entity_id": "P001", "secondary_entity_id": "P003", "location_id": "L002", "relative_time_start": "T+1d", "relative_time_end": "T+1d", "description": "Naina says she saw Rani at the hotel, then admits she had withheld this to test Badal.", "data_status": "Canon"}, {"event_id": "E023", "event_name": "Naina reveals Sunny was alive", "event_type": "Confession", "primary_entity_id": "P001", "secondary_entity_id": "P005", "location_id": "L002", "relative_time_start": "T+1d", "relative_time_end": "T+1d", "description": "Naina admits Sunny was alive when the car was disposed and she chose not to save him.", "data_status": "Canon"}, {"event_id": "E024", "event_name": "Badal proposes alternate reconstruction", "event_type": "Hypothesis", "primary_entity_id": "P007", "secondary_entity_id": "P001", "location_id": "L002", "relative_time_start": "T+1d", "relative_time_end": "T+1d", "description": "Badal suggests Naina pressured Arjun and may have orchestrated the cover-up.", "data_status": "Canon"}, {"event_id": "E025", "event_name": "Naina confesses to Arjun murder", "event_type": "Confession", "primary_entity_id": "P001", "secondary_entity_id": "P002", "location_id": "L002", "relative_time_start": "T+1d", "relative_time_end": "T+1d", "description": "Naina eventually admits killing Arjun.", "data_status": "Canon"}, {"event_id": "E026", "event_name": "Recorder discovered", "event_type": "Evidence Discovery", "primary_entity_id": "P001", "secondary_entity_id": "P007", "location_id": "L002", "relative_time_start": "T+1d", "relative_time_end": "T+1d", "description": "Naina discovers a hidden recorder in Badal's pen.", "data_status": "Canon"}, {"event_id": "E027", "event_name": "Real Badal arrives", "event_type": "Identity Reveal", "primary_entity_id": "P007", "secondary_entity_id": "P004", "location_id": "L002", "relative_time_start": "T+1d", "relative_time_end": "T+1d", "description": "The real Badal arrives, revealing the interviewer's identity is false.", "data_status": "Canon"}, {"event_id": "E028", "event_name": "Fake Badal revealed as Nirmal", "event_type": "Identity Reveal", "primary_entity_id": "P004", "secondary_entity_id": "P003", "location_id": "L008", "relative_time_start": "T+1d", "relative_time_end": "T+1d", "description": "The man posing as Badal removes his disguise and is revealed to be Nirmal.", "data_status": "Canon"}, {"event_id": "E029", "event_name": "Rani calls police", "event_type": "Arrest", "primary_entity_id": "P003", "secondary_entity_id": "P001", "location_id": "L008", "relative_time_start": "T+1d", "relative_time_end": "T+1d", "description": "Rani contacts police with the recorded confessions and Naina is arrested.", "data_status": "Canon"}], "relationships": [{"relationship_id": "R001", "source_id": "P001", "target_id": "P002", "relationship_type": "SECRET_RELATIONSHIP", "time_status": "Past", "confidence": "High", "data_status": "Canon"}, {"relationship_id": "R002", "source_id": "P001", "target_id": "P008", "relationship_type": "MARRIED_TO", "time_status": "Current", "confidence": "High", "data_status": "Canon"}, {"relationship_id": "R003", "source_id": "P003", "target_id": "P005", "relationship_type": "PARENT_OF", "time_status": "Past", "confidence": "High", "data_status": "Canon"}, {"relationship_id": "R004", "source_id": "P004", "target_id": "P005", "relationship_type": "PARENT_OF", "time_status": "Past", "confidence": "High", "data_status": "Canon"}, {"relationship_id": "R005", "source_id": "P003", "target_id": "P004", "relationship_type": "SPOUSE_OF", "time_status": "Current", "confidence": "High", "data_status": "Canon"}, {"relationship_id": "R006", "source_id": "P001", "target_id": "P006", "relationship_type": "CLIENT_OF", "time_status": "Current", "confidence": "High", "data_status": "Canon"}, {"relationship_id": "R007", "source_id": "P006", "target_id": "P007", "relationship_type": "PROFESSIONAL_CONTACT", "time_status": "Current", "confidence": "High", "data_status": "Canon"}, {"relationship_id": "R008", "source_id": "P001", "target_id": "P007", "relationship_type": "CLIENT_OF", "time_status": "Current", "confidence": "High", "data_status": "Canon"}, {"relationship_id": "R009", "source_id": "P004", "target_id": "P011", "relationship_type": "WORKS_AT_SAME_HOTEL", "time_status": "Past", "confidence": "Medium", "data_status": "Canon"}, {"relationship_id": "R010", "source_id": "P004", "target_id": "P001", "relationship_type": "IMPERSONATED_AS_LAWYER_TO", "time_status": "Past", "confidence": "High", "data_status": "Canon"}, {"relationship_id": "R011", "source_id": "P003", "target_id": "P001", "relationship_type": "SUSPECTS", "time_status": "Past", "confidence": "High", "data_status": "Canon"}, {"relationship_id": "R012", "source_id": "P003", "target_id": "P005", "relationship_type": "SEEKS_TRUTH_FOR", "time_status": "Past", "confidence": "High", "data_status": "Canon"}, {"relationship_id": "R013", "source_id": "P002", "target_id": "P005", "relationship_type": "INVOLVED_IN_DEATH_OF", "time_status": "Past", "confidence": "High", "data_status": "Canon"}, {"relationship_id": "R014", "source_id": "P001", "target_id": "P005", "relationship_type": "INVOLVED_IN_DEATH_OF", "time_status": "Past", "confidence": "High", "data_status": "Canon"}, {"relationship_id": "R015", "source_id": "P002", "target_id": "P009", "relationship_type": "MARRIED_TO", "time_status": "Past", "confidence": "High", "data_status": "Canon"}, {"relationship_id": "R016", "source_id": "P001", "target_id": "P009", "relationship_type": "AFFAIR_WITH_HUSBAND_OF", "time_status": "Past", "confidence": "High", "data_status": "Canon"}, {"relationship_id": "R017", "source_id": "P001", "target_id": "P010", "relationship_type": "INVESTIGATED_BY", "time_status": "Past", "confidence": "Medium", "data_status": "Canon"}, {"relationship_id": "R018", "source_id": "P002", "target_id": "P010", "relationship_type": "VICTIM_OF_INVESTIGATION", "time_status": "Past", "confidence": "Medium", "data_status": "Canon"}, {"relationship_id": "R019", "source_id": "P004", "target_id": "P003", "relationship_type": "COLLABORATED_WITH", "time_status": "Past", "confidence": "High", "data_status": "Canon"}, {"relationship_id": "R020", "source_id": "P006", "target_id": "P001", "relationship_type": "CREATED_FALSE_ALIBI_FOR", "time_status": "Past", "confidence": "High", "data_status": "Canon"}, {"relationship_id": "R021", "source_id": "P004", "target_id": "P007", "relationship_type": "IDENTITY_IMPERSONATION", "time_status": "Past", "confidence": "High", "data_status": "Canon"}], "communications": [{"comm_id": "C001", "from_asset": "A003", "to_asset": "A004", "channel": "CALL", "relative_time": "T-30d", "duration_seconds": "120", "approx_location": "Unknown", "investigative_note": "Blackmail-related contact; exact caller not established", "data_status": "Synthetic"}, {"comm_id": "C002", "from_asset": "A004", "to_asset": "A003", "channel": "SMS", "relative_time": "T-1d", "duration_seconds": "1", "approx_location": "Hotel area", "investigative_note": "Arjun's phone sends warning/blackmail-related message to Naina", "data_status": "Synthetic reconstruction"}, {"comm_id": "C003", "from_asset": "A006", "to_asset": "A005", "channel": "CALL", "relative_time": "T-89d", "duration_seconds": "30", "approx_location": "Rani's home", "investigative_note": "Rani calls Sunny's phone, which is in Arjun's possession", "data_status": "Canon event, synthetic CDR"}, {"comm_id": "C004", "from_asset": "A003", "to_asset": "A006", "channel": "CALL", "relative_time": "T-60d", "duration_seconds": "240", "approx_location": "Award venue", "investigative_note": "Synthetic reconstruction of communication context", "data_status": "Synthetic"}, {"comm_id": "C005", "from_asset": "A003", "to_asset": "A004", "channel": "CALL", "relative_time": "T-30d", "duration_seconds": "180", "approx_location": "Unknown", "investigative_note": "Synthetic reconstruction of communication context", "data_status": "Synthetic"}, {"comm_id": "C006", "from_asset": "A003", "to_asset": "A004", "channel": "CALL", "relative_time": "T-1d", "duration_seconds": "90", "approx_location": "Glen Mohr area", "investigative_note": "Synthetic reconstruction around hotel meeting", "data_status": "Synthetic"}, {"comm_id": "C007", "from_asset": "A004", "to_asset": "A009", "channel": "BANK_CONTACT", "relative_time": "T-80d", "duration_seconds": "1", "approx_location": "Unknown", "investigative_note": "Synthetic financial-system event linked to Arjun", "data_status": "Synthetic"}, {"comm_id": "C008", "from_asset": "A004", "to_asset": "A005", "channel": "CALL", "relative_time": "T-88d", "duration_seconds": "45", "approx_location": "Unknown", "investigative_note": "Synthetic reconstruction after earlier incident", "data_status": "Synthetic"}, {"comm_id": "C009", "from_asset": "A006", "to_asset": "A007", "channel": "CALL", "relative_time": "T-1d", "duration_seconds": "60", "approx_location": "Hotel area", "investigative_note": "Synthetic reconstruction of Rani/Nirmal coordination", "data_status": "Synthetic"}, {"comm_id": "C010", "from_asset": "A004", "to_asset": "A005", "channel": "CALL", "relative_time": "T-89d", "duration_seconds": "15", "approx_location": "Rani's home", "investigative_note": "Sunny's phone rings while Arjun is present", "data_status": "Canon event, synthetic CDR"}], "transactions": [{"transaction_id": "T001", "from_asset": "A008", "to_asset": "A011", "transaction_type": "CASH_WITHDRAWAL", "relative_time": "T-2d", "amount": "5000", "currency": "GBP", "description": "Cash obtained for blackmail meeting", "data_status": "Synthetic"}, {"transaction_id": "T002", "from_asset": "A008", "to_asset": "A011", "transaction_type": "CASH_WITHDRAWAL", "relative_time": "T-1d", "amount": "5000", "currency": "GBP", "description": "Cash brought to Glen Mohr Hotel", "data_status": "Synthetic"}, {"transaction_id": "T003", "from_asset": "A010", "to_asset": "A013", "transaction_type": "BANK_REVIEW", "relative_time": "T-80d", "amount": "0", "currency": "GBP", "description": "Synthetic compliance review triggered by alleged embezzlement", "data_status": "Synthetic"}, {"transaction_id": "T004", "from_asset": "A009", "to_asset": "A010", "transaction_type": "TRANSFER", "relative_time": "T-79d", "amount": "2500", "currency": "GBP", "description": "Synthetic demonstration transaction", "data_status": "Synthetic"}, {"transaction_id": "T005", "from_asset": "A008", "to_asset": "A009", "transaction_type": "TRANSFER", "relative_time": "T-30d", "amount": "1500", "currency": "GBP", "description": "Synthetic financial relationship feature", "data_status": "Synthetic"}, {"transaction_id": "T006", "from_asset": "A011", "to_asset": "A011", "transaction_type": "CASH_HELD", "relative_time": "T-1d", "amount": "5000", "currency": "GBP", "description": "Cash present at hotel scene", "data_status": "Canon event, synthetic amount"}], "evidence": [{"evidence_id": "EV001", "evidence_name": "Arjun's body", "evidence_type": "PHYSICAL", "linked_entity_id": "P002", "location_id": "L001", "relative_time": "T-1d", "investigative_value": "Supports murder occurred at hotel", "confidence": "High", "data_status": "Canon"}, {"evidence_id": "EV002", "evidence_name": "Cash scattered in hotel room", "evidence_type": "PHYSICAL", "linked_entity_id": "A011", "location_id": "L001", "relative_time": "T-1d", "investigative_value": "Links hotel scene to blackmail narrative", "confidence": "Medium", "data_status": "Canon/Synthetic amount"}, {"evidence_id": "EV003", "evidence_name": "Hotel room access record", "evidence_type": "ACCESS_LOG", "linked_entity_id": "P001", "location_id": "L001", "relative_time": "T-1d", "investigative_value": "Naina had access to the room; no clear evidence of forced entry", "confidence": "High", "data_status": "Canon"}, {"evidence_id": "EV004", "evidence_name": "Sunny's phone", "evidence_type": "DIGITAL_DEVICE", "linked_entity_id": "A005", "location_id": "L003", "relative_time": "T-89d", "investigative_value": "Phone rings in Rani's home while in Arjun's possession", "confidence": "High", "data_status": "Canon"}, {"evidence_id": "EV005", "evidence_name": "Sunny's photograph", "evidence_type": "DOCUMENT/PHOTO", "linked_entity_id": "P005", "location_id": "L003", "relative_time": "T-89d", "investigative_value": "Allows Arjun to recognize Sunny's family", "confidence": "Medium", "data_status": "Canon"}, {"evidence_id": "EV006", "evidence_name": "Vehicle plate observation", "evidence_type": "SURVEILLANCE", "linked_entity_id": "A001", "location_id": "L003", "relative_time": "T-75d", "investigative_value": "Rani connects Naina's car to Sunny's disappearance", "confidence": "High", "data_status": "Canon"}, {"evidence_id": "EV007", "evidence_name": "False alibi", "evidence_type": "TESTIMONY/LEGAL", "linked_entity_id": "P006", "location_id": "P001", "relative_time": "T-74d", "investigative_value": "Alibi later described as falsified", "confidence": "High", "data_status": "Canon"}, {"evidence_id": "EV008", "evidence_name": "Business award appearance", "evidence_type": "SURVEILLANCE", "linked_entity_id": "P001", "location_id": "L007", "relative_time": "T-60d", "investigative_value": "Rani confronts Naina publicly", "confidence": "Medium", "data_status": "Canon"}, {"evidence_id": "EV009", "evidence_name": "Blackmail message", "evidence_type": "DIGITAL", "linked_entity_id": "A004", "location_id": "A003", "relative_time": "T-1d", "investigative_value": "Message draws Naina to hotel", "confidence": "Medium", "data_status": "Canon/Synthetic reconstruction"}, {"evidence_id": "EV010", "evidence_name": "Hotel CCTV", "evidence_type": "VIDEO", "linked_entity_id": "P001", "location_id": "L001", "relative_time": "T-1d", "investigative_value": "Synthetic surveillance record for prototype", "confidence": "High", "data_status": "Synthetic"}, {"evidence_id": "EV011", "evidence_name": "Swamp vehicle location", "evidence_type": "PHYSICAL/LOCATION", "linked_entity_id": "A002", "location_id": "L005", "relative_time": "T+1d", "investigative_value": "Location disclosed during interrogation", "confidence": "High", "data_status": "Canon"}, {"evidence_id": "EV012", "evidence_name": "Arjun's watch", "evidence_type": "PHYSICAL", "linked_entity_id": "P002", "location_id": "L005", "relative_time": "T+1d", "investigative_value": "Used in Badal's proposed reconstruction", "confidence": "Medium", "data_status": "Canon"}, {"evidence_id": "EV013", "evidence_name": "Recorder pen", "evidence_type": "DIGITAL_DEVICE", "linked_entity_id": "A012", "location_id": "L002", "relative_time": "T+1d", "investigative_value": "Hidden recorder captures Naina's confessions", "confidence": "High", "data_status": "Canon"}, {"evidence_id": "EV014", "evidence_name": "Recorded confession", "evidence_type": "AUDIO", "linked_entity_id": "P001", "location_id": "L002", "relative_time": "T+1d", "investigative_value": "Captures Naina's admission concerning Arjun", "confidence": "High", "data_status": "Canon"}, {"evidence_id": "EV015", "evidence_name": "Identity reveal observation", "evidence_type": "VISUAL", "linked_entity_id": "P004", "location_id": "L008", "relative_time": "T+1d", "investigative_value": "Nirmal is observed removing the Badal disguise", "confidence": "High", "data_status": "Canon"}], "statements": [{"statement_id": "S001", "speaker_id": "P001", "topic": "Arjun murder", "statement_text": "I was attacked and lost consciousness before Arjun was killed.", "statement_context": "Initial account", "relative_time": "T+1d", "truth_status": "False/Incomplete", "data_status": "Canon"}, {"statement_id": "S002", "speaker_id": "P001", "topic": "Sunny incident", "statement_text": "Sunny died in the road accident and we hid the body.", "statement_context": "Initial account", "relative_time": "T+1d", "truth_status": "False/Incomplete", "data_status": "Canon"}, {"statement_id": "S003", "speaker_id": "P001", "topic": "Hotel presence of Rani", "statement_text": "I saw Rani in the hotel room.", "statement_context": "Later disclosure", "relative_time": "T+1d", "truth_status": "True", "data_status": "Canon"}, {"statement_id": "S004", "speaker_id": "P001", "topic": "Sunny condition", "statement_text": "Sunny was still alive when the car was dumped.", "statement_context": "Confession", "relative_time": "T+1d", "truth_status": "True", "data_status": "Canon"}, {"statement_id": "S005", "speaker_id": "P001", "topic": "Arjun murder", "statement_text": "I killed Arjun.", "statement_context": "Confession", "relative_time": "T+1d", "truth_status": "True", "data_status": "Canon"}, {"statement_id": "S006", "speaker_id": "P003", "topic": "Sunny disappearance", "statement_text": "I believe Naina knows what happened to Sunny.", "statement_context": "Confrontation", "relative_time": "T-60d", "truth_status": "True", "data_status": "Canon"}, {"statement_id": "S007", "speaker_id": "P007", "topic": "Witness", "statement_text": "A witness will testify against Naina.", "statement_context": "Interview tactic", "relative_time": "T+1d", "truth_status": "False/Bluff", "data_status": "Canon"}, {"statement_id": "S008", "speaker_id": "P007", "topic": "Witness", "statement_text": "There is no witness; I invented the witness story to make you tell the truth.", "statement_context": "Revelation", "relative_time": "T+1d", "truth_status": "True", "data_status": "Canon"}, {"statement_id": "S009", "speaker_id": "P001", "topic": "Rani involvement", "statement_text": "I lied about seeing Rani to test whether Badal could solve the case.", "statement_context": "Revelation", "relative_time": "T+1d", "truth_status": "True", "data_status": "Canon"}, {"statement_id": "S010", "speaker_id": "P006", "topic": "Naina alibi", "statement_text": "Naina has an alibi for the earlier incident.", "statement_context": "Legal defense", "relative_time": "T-74d", "truth_status": "False/Fabricated", "data_status": "Canon"}, {"statement_id": "S011", "speaker_id": "P004", "topic": "Identity", "statement_text": "I am Badal Gupta.", "statement_context": "Impersonation", "relative_time": "T+1d", "truth_status": "False", "data_status": "Canon"}, {"statement_id": "S012", "speaker_id": "P007", "topic": "Identity", "statement_text": "I am the real Badal Gupta.", "statement_context": "Identity verification", "relative_time": "T+1d", "truth_status": "True", "data_status": "Canon"}], "hypotheses": [{"hypothesis_id": "H001", "hypothesis_name": "Rani killed Arjun", "primary_entity": "P003", "target_entity": "P002", "basis": "Supported temporarily by Naina's narrative; later superseded", "confidence": "Medium", "data_status": "Canon"}, {"hypothesis_id": "H002", "hypothesis_name": "Nirmal helped Rani access the hotel", "primary_entity": "P004", "target_entity": "P003", "basis": "Fits hotel employment and final reveal", "confidence": "Medium", "data_status": "Canon"}, {"hypothesis_id": "H003", "hypothesis_name": "Naina killed Arjun", "primary_entity": "P001", "target_entity": "P002", "basis": "Supported by final confession and recorder evidence", "confidence": "High", "data_status": "Canon"}, {"hypothesis_id": "H004", "hypothesis_name": "Arjun was involved in the Sunny cover-up", "primary_entity": "P002", "target_entity": "P005", "basis": "Supported by Naina's disclosures and later reconstruction", "confidence": "High", "data_status": "Canon"}, {"hypothesis_id": "H005", "hypothesis_name": "Naina was involved in Sunny's death/cover-up", "primary_entity": "P001", "target_entity": "P005", "basis": "Supported by final disclosures", "confidence": "High", "data_status": "Canon"}, {"hypothesis_id": "H006", "hypothesis_name": "Fake Badal is Nirmal", "primary_entity": "P004", "target_entity": "P007", "basis": "Confirmed by identity reveal", "confidence": "High", "data_status": "Canon"}], "ml_features": [{"entity_id": "P001", "degree_count": "14", "evidence_links": "7", "event_links": "5", "communication_links": "4", "location_links": "4", "hypothesis_links": "3", "demo_priority_score": "0.91", "demo_priority_label": "1"}, {"entity_id": "P002", "degree_count": "8", "evidence_links": "5", "event_links": "4", "communication_links": "3", "location_links": "3", "hypothesis_links": "2", "demo_priority_score": "0.83", "demo_priority_label": "1"}, {"entity_id": "P003", "degree_count": "7", "evidence_links": "4", "event_links": "3", "communication_links": "4", "location_links": "3", "hypothesis_links": "3", "demo_priority_score": "0.78", "demo_priority_label": "1"}, {"entity_id": "P004", "degree_count": "8", "evidence_links": "5", "event_links": "4", "communication_links": "4", "location_links": "3", "hypothesis_links": "3", "demo_priority_score": "0.86", "demo_priority_label": "1"}, {"entity_id": "P005", "degree_count": "4", "evidence_links": "2", "event_links": "2", "communication_links": "2", "location_links": "1", "hypothesis_links": "1", "demo_priority_score": "0.35", "demo_priority_label": "0"}, {"entity_id": "P006", "degree_count": "5", "evidence_links": "3", "event_links": "2", "communication_links": "2", "location_links": "1", "hypothesis_links": "2", "demo_priority_score": "0.52", "demo_priority_label": "0"}, {"entity_id": "P007", "degree_count": "4", "evidence_links": "2", "event_links": "1", "communication_links": "2", "location_links": "1", "hypothesis_links": "1", "demo_priority_score": "0.4", "demo_priority_label": "0"}, {"entity_id": "P008", "degree_count": "2", "evidence_links": "1", "event_links": "1", "communication_links": "1", "location_links": "0", "hypothesis_links": "1", "demo_priority_score": "0.18", "demo_priority_label": "0"}, {"entity_id": "P009", "degree_count": "3", "evidence_links": "2", "event_links": "1", "communication_links": "2", "location_links": "1", "hypothesis_links": "1", "demo_priority_score": "0.3", "demo_priority_label": "0"}, {"entity_id": "P010", "degree_count": "5", "evidence_links": "3", "event_links": "2", "communication_links": "3", "location_links": "1", "hypothesis_links": "2", "demo_priority_score": "0.45", "demo_priority_label": "0"}, {"entity_id": "P011", "degree_count": "2", "evidence_links": "1", "event_links": "1", "communication_links": "1", "location_links": "0", "hypothesis_links": "1", "demo_priority_score": "0.12", "demo_priority_label": "0"}, {"entity_id": "P012", "degree_count": "2", "evidence_links": "1", "event_links": "1", "communication_links": "1", "location_links": "0", "hypothesis_links": "1", "demo_priority_score": "0.1", "demo_priority_label": "0"}, {"entity_id": "P013", "degree_count": "2", "evidence_links": "1", "event_links": "1", "communication_links": "1", "location_links": "1", "hypothesis_links": "1", "demo_priority_score": "0.14", "demo_priority_label": "0"}, {"entity_id": "P014", "degree_count": "3", "evidence_links": "1", "event_links": "1", "communication_links": "2", "location_links": "1", "hypothesis_links": "1", "demo_priority_score": "0.15", "demo_priority_label": "0"}, {"entity_id": "P015", "degree_count": "4", "evidence_links": "2", "event_links": "1", "communication_links": "2", "location_links": "1", "hypothesis_links": "2", "demo_priority_score": "0.25", "demo_priority_label": "0"}]};
+
+const persons = DATA.persons;
+const locations = DATA.locations;
+const assets = DATA.assets;
+const events = DATA.events;
+const relationships = DATA.relationships;
+const communications = DATA.communications;
+const transactions = DATA.transactions;
+const evidence = DATA.evidence;
+const statements = DATA.statements;
+const hypotheses = DATA.hypotheses;
+const mlFeatures = DATA.ml_features;
+
+const byId = {};
+persons.forEach(p=>byId[p.entity_id]=p);
+locations.forEach(l=>byId[l.location_id]=l);
+assets.forEach(a=>byId[a.asset_id]=a);
+evidence.forEach(e=>byId[e.evidence_id]=e);
+const mlById = {}; mlFeatures.forEach(m=>mlById[m.entity_id]=m);
+
+const roleColor = {
+  "Suspect":"#b0483f","Victim":"#7c8a9c","Witness/Investigator":"#4f8f79",
+  "Person of Interest":"#c9932f","Lawyer":"#8a7fc9","Family":"#7c8a9c",
+  "Witness":"#4f8f79","Police":"#5c8fb0","Hotel Staff":"#9a9488",
+  "Bank Staff":"#9a9488","Forensics":"#9a9488"
+};
+function personColor(p){ return roleColor[p.role] || "#8a8f98"; }
+
+/* ============ TAB SWITCHING ============ */
+const views = ["graph","timeline","statements","evidence","priority"];
+const titles = {
+  graph:["Investigation graph","Click a node to open its dossier. Drag to rearrange, scroll to zoom."],
+  timeline:["Case timeline","Reconstructed chronology, from the earliest prior incident to the arrest."],
+  statements:["Statement consistency","Grouped by speaker and topic — later disclosures are checked against earlier accounts."],
+  evidence:["Evidence board","Physical, digital and testimonial evidence linked to people and locations."],
+  priority:["Investigation priority","A demo ranking only — not a probability of guilt. See note below."]
+};
+function activateTab(tab){
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.remove('active'));
+  document.querySelector(`#tabs button[data-tab="${tab}"]`).classList.add('active');
+  views.forEach(v=>{
+    const el = document.getElementById('view-'+v);
+    if(v === tab){
+      el.style.display = (v==='graph' || v==='evidence') ? 'flex' : 'block';
+      if(v==='evidence') el.style.flexDirection = 'column';
+    } else {
+      el.style.display = 'none';
+    }
+  });
+  document.getElementById('graph-layers-block').style.display = (tab==='graph'?'block':'none');
+  document.getElementById('path-finder-block').style.display = (tab==='graph'?'flex':'none');
+  document.getElementById('graph-stats').style.display = (tab==='graph'?'flex':'none');
+  document.getElementById('stage-title').textContent = titles[tab][0];
+  document.getElementById('stage-sub').textContent = titles[tab][1];
+  if(tab==='timeline' && !document.getElementById('view-timeline').dataset.built) buildTimeline();
+  if(tab==='statements' && !document.getElementById('view-statements').dataset.built) buildStatements();
+  if(tab==='evidence' && !document.getElementById('view-evidence').dataset.built) buildEvidence();
+  if(tab==='priority' && !document.getElementById('view-priority').dataset.built) buildPriority();
+}
+document.getElementById('tabs').addEventListener('click', e=>{
+  const btn = e.target.closest('button'); if(!btn) return;
+  activateTab(btn.dataset.tab);
+});
+// Keyboard shortcut: keys 1–5 switch tabs
+document.addEventListener('keydown', e=>{
+  if(e.target.tagName==='INPUT' || e.target.tagName==='SELECT') return;
+  const idx = parseInt(e.key);
+  if(idx>=1 && idx<=5) activateTab(views[idx-1]);
+});
+
+/* ============ SIDEBAR: PERSON LIST ============ */
+const entityListEl = document.getElementById('entity-list');
+document.getElementById('person-count').textContent = persons.length;
+function renderEntityList(filter=""){
+  const f = filter.trim().toLowerCase();
+  entityListEl.innerHTML = "";
+  persons
+    .slice()
+    .sort((a,b)=> parseFloat(mlById[b.entity_id]?.demo_priority_score||0) - parseFloat(mlById[a.entity_id]?.demo_priority_score||0))
+    .filter(p=> !f || p.name.toLowerCase().includes(f) || p.role.toLowerCase().includes(f) || p.entity_id.toLowerCase().includes(f))
+    .forEach(p=>{
+      const row = document.createElement('div');
+      row.className='entity-row';
+      row.dataset.id = p.entity_id;
+      row.innerHTML = `<span class="dot" style="background:${personColor(p)}"></span>${p.name}<span class="pr">${mlById[p.entity_id]?.demo_priority_score||''}</span>`;
+      row.addEventListener('click', ()=> selectEntity(p.entity_id));
+      entityListEl.appendChild(row);
+    });
+}
+renderEntityList();
+document.getElementById('search').addEventListener('input', e=>renderEntityList(e.target.value));
+
+/* ============ GRAPH ============ */
+let activeLayers = new Set(['relationships']);
+document.getElementById('layer-chips').addEventListener('click', e=>{
+  const chip = e.target.closest('.chip'); if(!chip) return;
+  const layer = chip.dataset.layer;
+  chip.classList.toggle('on');
+  if(activeLayers.has(layer)) activeLayers.delete(layer); else activeLayers.add(layer);
+  buildGraph();
+});
+
+const svg = d3.select('#graph');
+let simulation;
+
+function buildGraphData(){
+  const nodes = [];
+  const links = [];
+  const nodeSet = new Set();
+  function addNode(id, obj){ if(!nodeSet.has(id)){ nodeSet.add(id); nodes.push(obj); } }
+
+  persons.forEach(p=> addNode(p.entity_id, {id:p.entity_id, kind:'person', label:p.name, data:p, r:8+ (parseFloat(mlById[p.entity_id]?.degree_count||4))*0.6}));
+
+  if(activeLayers.has('relationships')){
+    relationships.forEach(r=>{
+      links.push({source:r.source_id, target:r.target_id, label:r.relationship_type, status:r.data_status, kind:'relationship'});
+    });
+  }
+  if(activeLayers.has('events')){
+    events.forEach(ev=>{
+      if(ev.primary_entity_id!==ev.secondary_entity_id && ev.primary_entity_id.startsWith('P') && ev.secondary_entity_id.startsWith('P')){
+        links.push({source:ev.primary_entity_id, target:ev.secondary_entity_id, label:ev.event_name, status:ev.data_status, kind:'event'});
+      }
+    });
+  }
+  if(activeLayers.has('locations')){
+    locations.forEach(l=> addNode(l.location_id, {id:l.location_id, kind:'location', label:l.name, data:l, r:7}));
+    events.forEach(ev=>{
+      if(ev.location_id && ev.primary_entity_id.startsWith('P')){
+        links.push({source:ev.primary_entity_id, target:ev.location_id, label:'at', status:ev.data_status, kind:'location-link'});
+      }
+    });
+  }
+  if(activeLayers.has('evidence')){
+    evidence.forEach(ev=> addNode(ev.evidence_id, {id:ev.evidence_id, kind:'evidence', label:ev.evidence_name, data:ev, r:6}));
+    evidence.forEach(ev=>{
+      if(ev.linked_entity_id && (byId[ev.linked_entity_id])){
+        links.push({source:ev.evidence_id, target:ev.linked_entity_id, label:'evidence', status:ev.data_status, kind:'evidence-link'});
+      }
+    });
+  }
+  if(activeLayers.has('assets')){
+    assets.forEach(a=> addNode(a.asset_id, {id:a.asset_id, kind:'asset', label:a.name, data:a, r:5.5}));
+    assets.forEach(a=>{
+      if(a.owner_entity_id) links.push({source:a.owner_entity_id, target:a.asset_id, label:'owns', status:a.data_status, kind:'asset-link'});
+    });
+  }
+
+  // drop links whose endpoints aren't in the node set
+  const finalLinks = links.filter(l=> nodeSet.has(l.source) && nodeSet.has(l.target));
+  return {nodes, links:finalLinks};
+}
+
+const kindColor = {person:null, location:'#c9932f', evidence:'#b0483f', asset:'#5c8fb0'};
+const kindShape = {person:'circle', location:'square', evidence:'diamond', asset:'triangle'};
+
+/* ============ TOOLTIP ============ */
+const tooltip = document.getElementById('graph-tooltip');
+function showTooltip(ev, d){
+  const ml = mlById[d.id] || {};
+  const score = ml.demo_priority_score ? parseFloat(ml.demo_priority_score) : null;
+  document.getElementById('tt-name').textContent = d.label;
+  document.getElementById('tt-role').textContent =
+    d.data?.role || d.data?.investigation_role || d.data?.asset_type || d.data?.evidence_type || '';
+  document.getElementById('tt-score').textContent =
+    score !== null ? `Priority score: ${score.toFixed(2)}` :
+    d.kind !== 'person' ? d.kind.charAt(0).toUpperCase()+d.kind.slice(1) : '';
+  tooltip.style.display = 'block';
+  moveTooltip(ev);
+}
+function moveTooltip(ev){
+  const pad = 14;
+  let x = ev.clientX + pad, y = ev.clientY + pad;
+  if(x + 230 > window.innerWidth) x = ev.clientX - 230 - pad;
+  if(y + 90 > window.innerHeight) y = ev.clientY - 90 - pad;
+  tooltip.style.left = x + 'px';
+  tooltip.style.top  = y + 'px';
+}
+function hideTooltip(){ tooltip.style.display = 'none'; }
+
+/* ============ PATH FINDER (BFS on persons) ============ */
+let pathNodeIds = new Set();
+let pathEdgeSet = new Set();
+
+function bfsPath(fromId, toId){
+  // Build adjacency over ALL relationship + event edges between persons
+  const adj = {};
+  const allNodes = persons.map(p=>p.entity_id);
+  allNodes.forEach(id=>{ adj[id] = []; });
+  relationships.forEach(r=>{
+    if(adj[r.source_id] && adj[r.target_id]){
+      adj[r.source_id].push(r.target_id);
+      adj[r.target_id].push(r.source_id);
+    }
+  });
+  events.forEach(ev=>{
+    const s = ev.primary_entity_id, t = ev.secondary_entity_id;
+    if(s !== t && adj[s] && adj[t]){
+      if(!adj[s].includes(t)) adj[s].push(t);
+      if(!adj[t].includes(s)) adj[t].push(s);
+    }
+  });
+  // BFS
+  const visited = {[fromId]: null};
+  const queue = [fromId];
+  while(queue.length){
+    const cur = queue.shift();
+    if(cur === toId) break;
+    for(const nb of (adj[cur]||[])){
+      if(!(nb in visited)){
+        visited[nb] = cur;
+        queue.push(nb);
+      }
+    }
+  }
+  if(!(toId in visited)) return null;
+  const path = [];
+  let cur = toId;
+  while(cur !== null){ path.unshift(cur); cur = visited[cur]; }
+  return path;
+}
+
+function applyPathHighlight(pathIds){
+  pathNodeIds = new Set(pathIds);
+  pathEdgeSet = new Set();
+  for(let i=0;i<pathIds.length-1;i++){
+    pathEdgeSet.add(pathIds[i]+'||'+pathIds[i+1]);
+    pathEdgeSet.add(pathIds[i+1]+'||'+pathIds[i]);
+  }
+  const haspath = pathNodeIds.size > 0;
+  d3.selectAll('g.node').classed('path-dim', d=> haspath && !pathNodeIds.has(d.id));
+  d3.selectAll('g.node').classed('path-highlight', d=> haspath && pathNodeIds.has(d.id));
+  d3.selectAll('.link').classed('path-dim', d=>{
+    if(!haspath) return false;
+    const sk = (d.source.id||d.source)+'||'+(d.target.id||d.target);
+    return !pathEdgeSet.has(sk);
+  });
+  d3.selectAll('.link').classed('path-highlight', d=>{
+    if(!haspath) return false;
+    const sk = (d.source.id||d.source)+'||'+(d.target.id||d.target);
+    return pathEdgeSet.has(sk);
+  });
+}
+
+function clearPathHighlight(){
+  pathNodeIds = new Set();
+  pathEdgeSet = new Set();
+  d3.selectAll('g.node').classed('path-dim path-highlight',false);
+  d3.selectAll('.link').classed('path-dim path-highlight',false);
+  document.getElementById('path-result').style.display='none';
+}
+
+// Populate path-finder selects
+function populatePathSelects(){
+  const sel = persons.slice().sort((a,b)=>a.name.localeCompare(b.name));
+  ['path-from','path-to'].forEach(id=>{
+    const el = document.getElementById(id);
+    sel.forEach(p=>{
+      const opt = document.createElement('option');
+      opt.value = p.entity_id;
+      opt.textContent = p.name;
+      el.appendChild(opt);
+    });
+  });
+}
+populatePathSelects();
+
+document.getElementById('btn-find-path').addEventListener('click', ()=>{
+  const from = document.getElementById('path-from').value;
+  const to   = document.getElementById('path-to').value;
+  const res  = document.getElementById('path-result');
+  if(!from || !to || from===to){ res.style.display='none'; return; }
+  const path = bfsPath(from, to);
+  res.style.display = 'block';
+  if(!path){
+    res.className = 'path-result none';
+    res.textContent = 'No path found between these entities.';
+    clearPathHighlight();
+  } else {
+    res.className = 'path-result';
+    res.innerHTML = path.map(id=> `<b>${byId[id]?.name||id}</b>`).join(' → ') +
+      `<br><span style="color:var(--text-faint)">${path.length-1} hop${path.length-1!==1?'s':''}</span>`;
+    applyPathHighlight(path);
+    // Switch to graph tab if not already
+    activateTab('graph');
+  }
+});
+document.getElementById('btn-clear-path').addEventListener('click', ()=>{
+  clearPathHighlight();
+  document.getElementById('path-from').value='';
+  document.getElementById('path-to').value='';
+  document.getElementById('path-result').style.display='none';
+});
+
+/* ============ GRAPH BUILD ============ */
+function buildGraph(){
+  svg.selectAll('*').remove();
+  const {nodes, links} = buildGraphData();
+  const wrap = document.getElementById('graph-wrap');
+  const width = wrap.clientWidth || 800;
+  const height = wrap.clientHeight || 600;
+  svg.attr('viewBox', [0,0,width,height]);
+
+  // Update stats bar
+  const personNodes = nodes.filter(n=>n.kind==='person').length;
+  const locNodes    = nodes.filter(n=>n.kind==='location').length;
+  const evNodes     = nodes.filter(n=>n.kind==='evidence').length;
+  document.getElementById('stat-nodes').textContent   = nodes.length;
+  document.getElementById('stat-edges').textContent   = links.length;
+  document.getElementById('stat-persons').textContent = personNodes;
+  document.getElementById('stat-locs').textContent    = locNodes;
+  document.getElementById('stat-ev').textContent      = evNodes;
+
+  const g = svg.append('g');
+  svg.call(d3.zoom().scaleExtent([0.3,3]).on('zoom', (ev)=> g.attr('transform', ev.transform)));
+
+  simulation = d3.forceSimulation(nodes)
+    .force('link', d3.forceLink(links).id(d=>d.id).distance(l=> l.kind==='relationship'?85:60).strength(0.55))
+    .force('charge', d3.forceManyBody().strength(-220))
+    .force('center', d3.forceCenter(width/2, height/2))
+    .force('collide', d3.forceCollide().radius(d=>(d.r||8)+14));
+
+  const link = g.append('g').selectAll('path')
+    .data(links).join('path')
+    .attr('class', d=> 'link' + (d.status && d.status.toLowerCase().includes('synth') ? ' synthetic':''));
+
+  const node = g.append('g').selectAll('g.node')
+    .data(nodes).join('g')
+    .attr('class','node')
+    .call(d3.drag()
+      .on('start', (ev,d)=>{ if(!ev.active) simulation.alphaTarget(0.25).restart(); d.fx=d.x; d.fy=d.y; })
+      .on('drag', (ev,d)=>{ d.fx=ev.x; d.fy=ev.y; })
+      .on('end', (ev,d)=>{ if(!ev.active) simulation.alphaTarget(0); d.fx=null; d.fy=null; }));
+
+  node.each(function(d){
+    const sel = d3.select(this);
+    const color = d.kind==='person' ? personColor(d.data) : kindColor[d.kind];
+    const shape = kindShape[d.kind];
+    const r = d.r || 8;
+
+    // Pulse ring for high-priority persons (score >= 0.75)
+    const ml = mlById[d.id];
+    if(d.kind==='person' && ml && parseFloat(ml.demo_priority_score) >= 0.75){
+      sel.append('circle')
+        .attr('class','pulse-ring')
+        .attr('r', r)
+        .style('--pr', r+'px');
+    }
+
+    if(shape==='circle'){
+      sel.append('circle').attr('class','node-circle').attr('r',r).attr('fill',color).attr('stroke','#0e0f12').attr('id','n-'+d.id);
+    } else if(shape==='square'){
+      sel.append('rect').attr('class','node-circle').attr('x',-r).attr('y',-r).attr('width',r*2).attr('height',r*2).attr('fill',color).attr('stroke','#0e0f12').attr('id','n-'+d.id);
+    } else if(shape==='diamond'){
+      sel.append('rect').attr('class','node-circle').attr('x',-r).attr('y',-r).attr('width',r*2).attr('height',r*2).attr('fill',color).attr('stroke','#0e0f12')
+        .attr('transform','rotate(45)').attr('id','n-'+d.id);
+    } else {
+      sel.append('polygon').attr('class','node-circle')
+        .attr('points', `0,${-r} ${r},${r} ${-r},${r}`)
+        .attr('fill',color).attr('stroke','#0e0f12').attr('id','n-'+d.id);
+    }
+    sel.append('text').attr('class','node-label').attr('x', r+5).attr('y',3)
+      .text(d.label.length>22 ? d.label.slice(0,20)+'…' : d.label);
+
+    // Hover: tooltip + dim other nodes
+    sel
+      .on('mouseover', (ev)=>{
+        showTooltip(ev, d);
+        // dim all other nodes and their links
+        d3.selectAll('g.node').classed('path-dim', n=> n.id !== d.id);
+        // find direct neighbours
+        const neighbours = new Set([d.id]);
+        links.forEach(l=>{
+          const sid = l.source.id||l.source, tid = l.target.id||l.target;
+          if(sid===d.id) neighbours.add(tid);
+          if(tid===d.id) neighbours.add(sid);
+        });
+        d3.selectAll('g.node').classed('path-dim', n=> !neighbours.has(n.id));
+        d3.selectAll('.link').classed('path-dim', l=>{
+          const sid=l.source.id||l.source, tid=l.target.id||l.target;
+          return sid!==d.id && tid!==d.id;
+        });
+      })
+      .on('mousemove', moveTooltip)
+      .on('mouseout', ()=>{
+        hideTooltip();
+        // Only restore if no path is active
+        if(pathNodeIds.size===0){
+          d3.selectAll('g.node').classed('path-dim', false);
+          d3.selectAll('.link').classed('path-dim', false);
+        } else {
+          applyPathHighlight([...pathNodeIds]);
+        }
+      })
+      .on('click', ()=> selectEntity(d.id));
+  });
+
+  simulation.on('tick', ()=>{
+    link.attr('d', d=> `M${d.source.x},${d.source.y} L${d.target.x},${d.target.y}`);
+    node.attr('transform', d=> `translate(${d.x},${d.y})`);
+  });
+}
+buildGraph();
+window.addEventListener('resize', ()=> buildGraph());
+
+/* ============ DOSSIER ============ */
+let selectedId = null;
+function highlightNode(id){
+  d3.selectAll('.node-circle').classed('selected', function(){ return this.id === 'n-'+id; });
+}
+function selectEntity(id){
+  selectedId = id;
+  document.querySelectorAll('.entity-row').forEach(r=> r.classList.toggle('selected', r.dataset.id===id));
+  highlightNode(id);
+  const dossier = document.getElementById('dossier');
+
+  if(byId[id] && persons.find(p=>p.entity_id===id)){
+    const p = byId[id];
+    const ml = mlById[id]||{};
+    const rels = relationships.filter(r=> r.source_id===id || r.target_id===id);
+    const evs = events.filter(e=> e.primary_entity_id===id || e.secondary_entity_id===id);
+    const evids = evidence.filter(e=> e.linked_entity_id===id);
+    const stmts = statements.filter(s=> s.speaker_id===id);
+    dossier.innerHTML = `
+      <div class="dossier-head">
+        <div class="dossier-kicker">${p.entity_id} · PERSON</div>
+        <div class="dossier-name">${p.name}</div>
+        <div class="dossier-role">${p.role}</div>
+        <span class="status-pill">${p.data_status}</span>
+      </div>
+      <div class="dossier-section">
+        <h4>Notes</h4>
+        <div class="dossier-note">${p.notes}</div>
+      </div>
+      <div class="dossier-section">
+        <h4>Investigation priority</h4>
+        <div class="dossier-note">Score ${ml.demo_priority_score||'—'} · ${ml.degree_count||0} connections, ${ml.evidence_links||0} evidence links, ${ml.event_links||0} events</div>
+      </div>
+      <div class="dossier-section">
+        <h4>Relationships (${rels.length})</h4>
+        ${rels.map(r=>{
+          const otherId = r.source_id===id? r.target_id : r.source_id;
+          const other = byId[otherId];
+          return `<div class="rel-item" onclick="selectEntity('${otherId}')"><b>${other?other.name:otherId}</b><span class="rtype">${r.relationship_type} · ${r.data_status}</span></div>`;
+        }).join('') || '<div class="dossier-note">None recorded.</div>'}
+      </div>
+      <div class="dossier-section">
+        <h4>Events (${evs.length})</h4>
+        ${evs.map(e=> `<div class="rel-item"><b>${e.event_name}</b><span class="rtype">${e.relative_time_start} · ${e.event_type}</span></div>`).join('') || '<div class="dossier-note">None recorded.</div>'}
+      </div>
+      ${evids.length? `<div class="dossier-section"><h4>Evidence (${evids.length})</h4>${evids.map(e=>`<div class="rel-item"><b>${e.evidence_name}</b><span class="rtype">${e.evidence_type} · ${e.confidence} confidence</span></div>`).join('')}</div>`:''}
+      ${stmts.length? `<div class="dossier-section"><h4>Statements (${stmts.length})</h4>${stmts.map(s=>`<div class="rel-item"><b>${s.statement_text}</b><span class="rtype">${s.truth_status} · ${s.statement_context}</span></div>`).join('')}</div>`:''}
+    `;
+  } else if(locations.find(l=>l.location_id===id)){
+    const l = byId[id];
+    const evs = events.filter(e=> e.location_id===id);
+    const evids = evidence.filter(e=> e.location_id===id);
+    dossier.innerHTML = `
+      <div class="dossier-head">
+        <div class="dossier-kicker">${l.location_id} · LOCATION</div>
+        <div class="dossier-name">${l.name}</div>
+        <div class="dossier-role">${l.investigation_role}</div>
+        <span class="status-pill">${l.data_status}</span>
+      </div>
+      <div class="dossier-section"><h4>Notes</h4><div class="dossier-note">${l.notes}</div></div>
+      <div class="dossier-section"><h4>Events here (${evs.length})</h4>${evs.map(e=>`<div class="rel-item"><b>${e.event_name}</b><span class="rtype">${e.relative_time_start}</span></div>`).join('')||'<div class="dossier-note">None.</div>'}</div>
+      <div class="dossier-section"><h4>Evidence here (${evids.length})</h4>${evids.map(e=>`<div class="rel-item"><b>${e.evidence_name}</b><span class="rtype">${e.evidence_type}</span></div>`).join('')||'<div class="dossier-note">None.</div>'}</div>
+    `;
+  } else if(evidence.find(e=>e.evidence_id===id)){
+    const e = byId[id];
+    const linked = byId[e.linked_entity_id];
+    dossier.innerHTML = `
+      <div class="dossier-head">
+        <div class="dossier-kicker">${e.evidence_id} · EVIDENCE</div>
+        <div class="dossier-name">${e.evidence_name}</div>
+        <div class="dossier-role">${e.evidence_type}</div>
+        <span class="status-pill">${e.data_status}</span>
+      </div>
+      <div class="dossier-section"><h4>Investigative value</h4><div class="dossier-note">${e.investigative_value}</div></div>
+      <div class="dossier-section"><h4>Linked to</h4><div class="rel-item" ${linked?`onclick="selectEntity('${e.linked_entity_id}')"`:''}><b>${linked?linked.name||linked.name:e.linked_entity_id}</b></div></div>
+      <div class="dossier-section"><h4>Confidence</h4><div class="dossier-note">${e.confidence} · recorded ${e.relative_time}</div></div>
+    `;
+  } else if(assets.find(a=>a.asset_id===id)){
+    const a = byId[id];
+    const owner = byId[a.owner_entity_id];
+    dossier.innerHTML = `
+      <div class="dossier-head">
+        <div class="dossier-kicker">${a.asset_id} · ASSET</div>
+        <div class="dossier-name">${a.name}</div>
+        <div class="dossier-role">${a.asset_type}</div>
+        <span class="status-pill">${a.data_status}</span>
+      </div>
+      <div class="dossier-section"><h4>Owner</h4><div class="rel-item" onclick="selectEntity('${a.owner_entity_id}')"><b>${owner?owner.name:a.owner_entity_id}</b></div></div>
+      <div class="dossier-section"><h4>Notes</h4><div class="dossier-note">${a.notes}</div></div>
+    `;
+  }
+}
+
+/* ============ TIMELINE ============ */
+function parseTime(t){
+  const m = t.match(/T([+-])(\d+)d/);
+  if(!m) return 0;
+  return (m[1]==='-'? -1:1) * parseInt(m[2]);
+}
+function buildTimeline(){
+  const el = document.getElementById('view-timeline');
+  el.dataset.built = "1";
+  const sorted = events.slice().sort((a,b)=> parseTime(a.relative_time_start)-parseTime(b.relative_time_start));
+  el.innerHTML = `<div class="timeline-wrap"><div class="timeline-track">${
+    sorted.map(e=>{
+      const t = parseTime(e.relative_time_start);
+      const p1 = byId[e.primary_entity_id]; const p2 = byId[e.secondary_entity_id];
+      const loc = byId[e.location_id];
+      return `<div class="tl-event ${t>0?'future':''}">
+        <div class="tl-time">${e.relative_time_start}${e.relative_time_end!==e.relative_time_start? ' → '+e.relative_time_end:''}</div>
+        <span class="tl-name">${e.event_name}</span><span class="tl-type">${e.event_type}</span>
+        <div class="tl-desc">${e.description}</div>
+        <div class="tl-tags">
+          ${p1?`<span class="tag" onclick="switchToGraphAndSelect('${p1.entity_id}')">${p1.name}</span>`:''}
+          ${p2&&p2.entity_id!==p1?.entity_id?`<span class="tag" onclick="switchToGraphAndSelect('${p2.entity_id}')">${p2.name}</span>`:''}
+          ${loc?`<span class="tag">${loc.name}</span>`:''}
+          <span class="tag">${e.data_status}</span>
+        </div>
+      </div>`;
+    }).join('')
+  }</div></div>`;
+}
+function switchToGraphAndSelect(id){
+  activateTab('graph');
+  setTimeout(()=>selectEntity(id), 50);
+}
+
+/* ============ STATEMENTS (contradiction view) ============ */
+function buildStatements(){
+  const el = document.getElementById('view-statements');
+  el.dataset.built = "1";
+  const groups = {};
+  statements.forEach(s=>{
+    const key = s.speaker_id+"::"+s.topic;
+    if(!groups[key]) groups[key]=[];
+    groups[key].push(s);
+  });
+
+  // Count total false/contradicted statements for badge
+  const totalFalse = statements.filter(s=> !s.truth_status.toLowerCase().startsWith('true')).length;
+  const btn = document.getElementById('tab-statements-btn');
+  if(totalFalse > 0){
+    // Remove existing badge if any
+    const existing = btn.querySelector('.tab-badge');
+    if(existing) existing.remove();
+    const badge = document.createElement('span');
+    badge.className = 'tab-badge';
+    badge.title = `${totalFalse} contradicted or false statement${totalFalse!==1?'s':''}`;
+    badge.textContent = totalFalse;
+    btn.appendChild(badge);
+  }
+
+  const html = Object.entries(groups).map(([key, stmts])=>{
+    const [speakerId, topic] = key.split("::");
+    const speaker = byId[speakerId];
+    const hasFalse = stmts.some(s=> !s.truth_status.toLowerCase().startsWith('true'));
+    return `<div class="contradiction-group${hasFalse?' has-false':''}">
+      <div class="cg-head">
+        <span class="cg-speaker">${speaker?speaker.name:speakerId}</span>
+        <span class="cg-topic">${topic}${hasFalse?' <span style="color:var(--rust);font-size:9px;margin-left:8px;">⚑ INCONSISTENCY</span>':''}</span>
+      </div>
+      <div class="cg-body">
+        ${stmts.map(s=>{
+          const isFalse = !s.truth_status.toLowerCase().startsWith('true');
+          return `<div class="stmt-row${isFalse?' is-false':''}">
+            <div class="stmt-context">${s.statement_context}<br><span style="color:var(--text-faint)">${s.relative_time}</span></div>
+            <div class="stmt-text">${s.statement_text}${isFalse?` <span style="color:var(--rust);font-size:10px;display:block;margin-top:3px;">⚠ Contradicted by evidence</span>`:''}
+            </div>
+            <div class="stmt-status ${s.truth_status.toLowerCase().startsWith('true')?'status-true':'status-false'}">${s.truth_status}</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }).join('');
+  el.innerHTML = `<div class="statements-wrap">${html}</div>`;
+}
+
+/* ============ EVIDENCE BOARD ============ */
+const confMap = {High:0.9, Medium:0.55, Low:0.25};
+
+function renderEvidenceGrid(minConf, typeFilter){
+  const filtered = evidence.filter(e=>{
+    const pct = (confMap[e.confidence]||0.5)*100;
+    const typeOk = !typeFilter || e.evidence_type === typeFilter;
+    return pct >= minConf && typeOk;
+  });
+  document.getElementById('ev-count-label').textContent =
+    `${filtered.length} / ${evidence.length} items`;
+  const html = filtered.map(e=>{
+    const linked = byId[e.linked_entity_id];
+    const loc = byId[e.location_id];
+    const pct = Math.round((confMap[e.confidence]||0.5)*100);
+    return `<div class="ev-card" onclick="switchToGraphAndSelect('${e.linked_entity_id}')" style="cursor:pointer">
+      <div class="ev-top"><div class="ev-name">${e.evidence_name}</div><div class="ev-type">${e.evidence_type}</div></div>
+      <div class="ev-value">${e.investigative_value}</div>
+      <div class="ev-meta"><span>${linked?(linked.name||e.linked_entity_id):e.linked_entity_id}${loc?' · '+loc.name:''}</span><span>${e.data_status}</span></div>
+      <div class="confidence-bar"><div class="confidence-fill" style="width:${pct}%"></div></div>
+    </div>`;
+  }).join('') || `<div style="color:var(--text-faint);font-size:12.5px;padding:20px">No evidence matches the current filter.</div>`;
+  document.getElementById('ev-grid-wrap').innerHTML = `<div class="evidence-grid">${html}</div>`;
+}
+
+function buildEvidence(){
+  const el = document.getElementById('view-evidence');
+  el.dataset.built = "1";
+
+  // Populate type filter dropdown
+  const types = [...new Set(evidence.map(e=>e.evidence_type))].sort();
+  const sel = document.getElementById('ev-type-filter');
+  types.forEach(t=>{ const o=document.createElement('option'); o.value=t; o.textContent=t; sel.appendChild(o); });
+
+  const slider = document.getElementById('conf-slider');
+  const confVal = document.getElementById('conf-value');
+  slider.addEventListener('input', ()=>{
+    confVal.textContent = slider.value + '%';
+    renderEvidenceGrid(parseInt(slider.value), sel.value);
+  });
+  sel.addEventListener('change', ()=>renderEvidenceGrid(parseInt(slider.value), sel.value));
+
+  renderEvidenceGrid(0, '');
+}
+
+/* ============ PRIORITY RANKING ============ */
+function buildPriority(){
+  const el = document.getElementById('view-priority');
+  el.dataset.built = "1";
+  const sorted = mlFeatures.slice().sort((a,b)=> parseFloat(b.demo_priority_score)-parseFloat(a.demo_priority_score));
+  const html = sorted.map(m=>{
+    const p = byId[m.entity_id];
+    const score = parseFloat(m.demo_priority_score);
+    const color = score>0.7? 'var(--rust)' : score>0.4? 'var(--brass)' : 'var(--slate)';
+    return `<div class="pr-row">
+      <div class="pr-name" onclick="switchToGraphAndSelect('${m.entity_id}')" style="cursor:pointer">${p?p.name:m.entity_id}<span class="pr-role">${p?p.role:''}</span></div>
+      <div class="pr-bar-bg"><div class="pr-bar-fill" style="width:${score*100}%;background:${color}"></div></div>
+      <div class="pr-score">${score.toFixed(2)}</div>
+    </div>`;
+  }).join('');
+  el.innerHTML = `<div class="priority-wrap">
+    <div class="priority-disclaimer">"Investigation priority" reflects how densely each entity is connected to events, evidence, communications and hypotheses in this dataset — it is a demo ranking for graph/ML prototyping, not a probability of guilt.</div>
+    ${html}
+  </div>`;
+}
+
+/* init */
+selectEntity('P001');
+</script>
+</body>
+</html>

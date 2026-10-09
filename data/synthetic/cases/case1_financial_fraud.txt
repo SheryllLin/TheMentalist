@@ -1,0 +1,66 @@
+CASE FILE: CASE-2026-ALPHA
+TYPE: Organized Financial Fraud
+CLASSIFICATION: SYNTHETIC DEMONSTRATION DATA
+
+INCIDENT SUMMARY
+On 10 January 2026, the Financial Intelligence Unit flagged a series of suspicious
+transactions routed through shell companies. Investigation revealed an organized network
+operating out of Mumbai, Pune, and Hyderabad.
+
+PERSONS OF INTEREST
+
+1. Arjun Mehta (alias: A.M., Arjun M.)
+   Phone: +91-98201-55431
+   Email: arjun.mehta.pvt@fastmail.com
+   Known associate of Priya Verma and Siddharth Rao.
+   Believed to be the financial coordinator of the scheme.
+
+2. Priya Verma (alias: P. Verma)
+   Phone: +91-80034-22190
+   Director of Goldline Exports Pvt. Ltd. (front company).
+   Frequently visited Delhi and Pune.
+
+3. Siddharth Rao
+   Phone: +91-77711-88223
+   Manages mule accounts linked to Arjun Mehta.
+   Traveled to Dubai on 15 January 2026 and 2 February 2026.
+
+4. Ritu Shah
+   Phone: +91-90005-33411
+   Bank employee suspected of facilitating fraudulent KYC approvals.
+
+ORGANIZATIONS
+
+- Goldline Exports Pvt. Ltd.
+  Registered: Mumbai. Director: Priya Verma.
+  Account: ACCT-4837291045
+
+- Nexus Traders LLP
+  Registered: Hyderabad. Linked to Siddharth Rao.
+  Account: ACCT-7712904833
+
+- FastCash Finance
+  Unofficial money transfer service used for layering.
+
+TIMELINE OF EVENTS
+
+10 Jan 2026 — Arjun Mehta met Priya Verma at Hotel Grand, Mumbai.
+12 Jan 2026 — Goldline Exports received INR 45,00,000 from an unidentified foreign account.
+14 Jan 2026 — Priya Verma transferred INR 18,00,000 to Nexus Traders LLP.
+15 Jan 2026 — Siddharth Rao departed Mumbai for Dubai. Phone activity ceased.
+18 Jan 2026 — Ritu Shah approved three new accounts at Bangalore Branch. All linked to Nexus Traders.
+20 Jan 2026 — Arjun Mehta called Ritu Shah (duration: 14 minutes).
+22 Jan 2026 — INR 12,00,000 transferred from Nexus Traders to a personal account held by Arjun Mehta.
+28 Jan 2026 — Siddharth Rao returned from Dubai. Met Arjun Mehta at Cafe Lattitude, Pune.
+2 Feb 2026  — Second Dubai trip by Siddharth Rao.
+5 Feb 2026  — Goldline Exports dissolved. Assets moved to FastCash Finance.
+
+COMMUNICATIONS
+
++91-98201-55431 called +91-80034-22190 on 09 Jan 2026 at 14:32 (duration 8 min)
++91-98201-55431 called +91-77711-88223 on 10 Jan 2026 at 09:14 (duration 22 min)
++91-80034-22190 called +91-90005-33411 on 17 Jan 2026 at 11:05 (duration 6 min)
++91-77711-88223 called +91-98201-55431 on 27 Jan 2026 at 20:44 (duration 11 min)
+
+FINANCIAL TRANSACTIONS (SUMMARY)
+See attached file: case1_transactions.csv

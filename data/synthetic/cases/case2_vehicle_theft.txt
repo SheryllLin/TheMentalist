@@ -1,0 +1,62 @@
+CASE FILE: CASE-2026-BETA
+TYPE: Organized Vehicle Theft Network
+CLASSIFICATION: SYNTHETIC DEMONSTRATION DATA
+
+INCIDENT SUMMARY
+Between November 2025 and February 2026, seventeen high-value vehicles were reported stolen
+across Delhi NCR. A surveillance operation identified a coordinated chop-shop network operating
+in Faridabad and Gurgaon.
+
+PERSONS OF INTEREST
+
+1. Karim Ansari (alias: K.A., Karim bhai)
+   Phone: +91-85551-99012
+   Believed to be the network coordinator.
+   Operates from Faridabad Industrial Area.
+
+2. Deepak Nair
+   Phone: +91-94433-70822
+   Driver and lookout. Linked to at least 6 theft incidents.
+   Drives a Silver Honda City (DL 8C 1122 — reported stolen Feb 2026).
+
+3. Sunita Malhotra
+   Phone: +91-73322-55601
+   Suspected of facilitating forged documents for re-registration.
+   Works at a regional transport office (identity protected in this document).
+
+4. Ravi Kulkarni
+   Phone: +91-88870-44212
+   Chop shop operator, Gurgaon. Linked to Karim Ansari.
+
+ORGANIZATIONS
+
+- K.A. Auto Parts
+  Unregistered business, Faridabad Industrial Area.
+  Receives stolen vehicle components.
+
+- SwiftDoc Services
+  Forged documentation service linked to Sunita Malhotra.
+
+VEHICLES (STOLEN)
+
+VH-001: Toyota Fortuner | DL 3C 4455 | Stolen: 2025-11-15 | Recovered: No
+VH-002: Mercedes-Benz GLE | DL 2B 9901 | Stolen: 2025-12-02 | Recovered: Partial
+VH-003: Honda CR-V | HR 26 8872 | Stolen: 2026-01-08 | Recovered: No
+
+TIMELINE OF EVENTS
+
+15 Nov 2025 — Toyota Fortuner stolen from Sector 18 parking, Noida.
+16 Nov 2025 — Karim Ansari contacted Ravi Kulkarni (call 18 min).
+02 Dec 2025 — Mercedes GLE stolen. Deepak Nair's phone pinged near scene.
+10 Dec 2025 — Deepak Nair met Karim Ansari at Dhaba 44, Faridabad.
+08 Jan 2026 — Honda CR-V stolen, Dwarka. Deepak Nair's vehicle sighted nearby.
+15 Jan 2026 — Sunita Malhotra received payment of INR 85,000 from K.A. Auto Parts.
+20 Jan 2026 — Re-registration documents for DL 3C 4455 filed under false identity.
+28 Jan 2026 — Ravi Kulkarni arrested at Gurgaon workshop. Three vehicles found dismantled.
+
+COMMUNICATIONS
+
++91-85551-99012 called +91-94433-70822 on 15 Nov 2025 at 23:10 (duration 4 min)
++91-85551-99012 called +91-88870-44212 on 16 Nov 2025 at 07:22 (duration 18 min)
++91-94433-70822 called +91-85551-99012 on 02 Dec 2025 at 01:15 (duration 2 min)
++91-73322-55601 called +91-85551-99012 on 12 Jan 2026 at 14:30 (duration 9 min)
